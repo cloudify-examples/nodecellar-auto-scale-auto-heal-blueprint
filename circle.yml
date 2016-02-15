@@ -2,14 +2,23 @@ machine:
   python:
     version: 2.7.9
 
+checkout:
+  post:
+    - >
+      if [ -n "$CI_PULL_REQUEST" ]; then
+        PR_ID=${CI_PULL_REQUEST##*/}
+        git fetch origin +refs/pull/$PR_ID/merge:
+        git checkout -qf FETCH_HEAD
+      fi
+
 dependencies:
   override:
-    - pip install https://github.com/cloudify-cosmo/cloudify-rest-client/archive/3.3.zip
-    - pip install https://github.com/cloudify-cosmo/cloudify-dsl-parser/archive/3.3.zip
-    - pip install https://github.com/cloudify-cosmo/cloudify-plugins-common/archive/3.3.zip
-    - pip install https://github.com/cloudify-cosmo/cloudify-script-plugin/archive/1.3.zip
-    - pip install https://github.com/cloudify-cosmo/cloudify-cli/archive/3.3.zip
-    - pip install https://github.com/cloudify-cosmo/tosca-vcloud-plugin/archive/1.3rc1.zip
+    - pip install https://github.com/cloudify-cosmo/cloudify-rest-client/archive/3.4m2.zip
+    - pip install https://github.com/cloudify-cosmo/cloudify-dsl-parser/archive/3.4m2.zip
+    - pip install https://github.com/cloudify-cosmo/cloudify-plugins-common/archive/3.4m2.zip
+    - pip install https://github.com/cloudify-cosmo/cloudify-script-plugin/archive/1.4.zip
+    - pip install https://github.com/cloudify-cosmo/cloudify-cli/archive/3.4m2.zip
+    - pip install https://github.com/cloudify-cosmo/tosca-vcloud-plugin/archive/1.3.1.zip
 
 
 test:
@@ -30,7 +39,8 @@ test:
     - cfy local execute -w install
     - cfy local execute -w uninstall
 
-
-# notify:
-#   flowdock: 1f4ec6febcf1ac9b35ae6c1f0049471f
-
+deployment:
+  release:
+    tag: /.*/
+    commands:
+      - (true)
