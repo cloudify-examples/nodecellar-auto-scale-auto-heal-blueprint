@@ -11,6 +11,7 @@ imports:
   - types/nodecellar.yaml
   - types/aws-ec2-types.yaml
   - types/haproxy/haproxy.yaml
+  - types/scale/scale.yaml
 
 #####################################################################################
 # inputs section allows the user to use same
@@ -220,3 +221,45 @@ outputs:
     value:
       ip_address: { get_attribute: [ nodecellar_ip, aws_resource_id ] }
       port: { get_property: [ haproxy, frontend_port ] }
+
+groups:
+
+  scale_up_group:
+    members: [haproxy]
+    policies:
+      auto_scale_up:
+        type: scale_policy_type
+        properties:
+          scale_limit: 3
+          scale_direction: <
+          scale_threshold: 3
+          service_selector: .*haproxy.servers.backend.rate$
+        triggers:
+          execute_scale_workflow:
+            type: cloudify.policies.triggers.execute_workflow
+            parameters:
+              workflow: scale
+              workflow_parameters:
+                delta: 1
+                node_id: nodecellar
+                scale_compute: true
+
+  scale_down_group:
+    members: [haproxy]
+    policies:
+      auto_scale_down:
+        type: scale_policy_type
+        properties:
+          scale_limit: 2
+          scale_direction: >
+          scale_threshold: 1
+          service_selector: .*haproxy.servers.backend.rate$
+        triggers:
+          execute_scale_workflow:
+            type: cloudify.policies.triggers.execute_workflow
+            parameters:
+              workflow: scale
+              workflow_parameters:
+                delta: -1
+                node_id: nodecellar
+                scale_compute: true
