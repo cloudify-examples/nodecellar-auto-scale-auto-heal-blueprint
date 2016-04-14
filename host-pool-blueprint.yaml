@@ -75,3 +75,49 @@ outputs:
     value:
       ip_address: { get_attribute: [ nodejs_host, public_address ] }
       port: { get_property: [nodecellar, port] }
+
+groups:
+
+  scale_up_group:
+    members: [haproxy]
+    policies:
+      haproxy_backend_rate_stress:
+        type: cloudify.policies.types.threshold
+        properties:
+          stability_time: 0
+          upper_bound: true
+          threshold: 4
+          service: .*haproxy.servers.backend.rate$
+        triggers:
+          execute_scale_workflow:
+            type: cloudify.policies.triggers.execute_workflow
+            parameters:
+              workflow: smart_scale
+              workflow_parameters:
+                delta: 1
+                node_id: nodecellar
+                scale_compute: true
+                min_instances: 2
+                max_instances: 6
+
+  scale_down_group:
+    members: [haproxy]
+    policies:
+      haproxy_backend_rate_stress:
+        type: cloudify.policies.types.threshold
+        properties:
+          stability_time: 0
+          upper_bound: false
+          threshold: 1
+          service: .*haproxy.servers.backend.rate$
+        triggers:
+          execute_scale_workflow:
+            type: cloudify.policies.triggers.execute_workflow
+            parameters:
+              workflow: smart_scale
+              workflow_parameters:
+                delta: -1
+                node_id: nodecellar
+                scale_compute: true
+                min_instances: 2
+                max_instances: 6

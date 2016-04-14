@@ -107,6 +107,8 @@ node_types:
         configure: scripts/nodecellar/install-nodecellar-app.sh
         start: scripts/nodecellar/start-nodecellar-app.sh
         stop: scripts/nodecellar/stop-nodecellar-app.sh
+      smart_scale_interface:
+        scale: cloudify_ha_plugin.policy_triggers.scale.scale
 
 ################################################################
 # Blueprint relationships.
@@ -153,3 +155,33 @@ relationships:
     target_interfaces:
       cloudify.interfaces.relationship_lifecycle:
         preconfigure: scripts/nodejs/set-nodejs-root.sh
+
+plugins:
+  cloudify_ha_plugin:
+    source: cloudify-ha-plugin
+    executor: central_deployment_agent
+
+workflows:
+  smart_scale:
+    mapping: cloudify_ha_plugin.policy_triggers.scale.scale
+    parameters:
+      node_id:
+        description: Which node (not node instance) to scale
+      delta:
+        description: >
+            How many nodes should be added/removed.
+            A positive number denotes increase of instances.
+            A negative number denotes decrease of instances.
+        default: 1
+      scale_compute:
+        description: >
+            If node is contained (transitively) within a compute node
+            and this property is 'true', operate on compute node instead
+            of 'node_id'
+        default: true
+      min_instances:
+        description: The minimum number of allowed instances
+        default: 1
+      max_instances:
+        description: The maximum number of allowed instances
+        default: 100
