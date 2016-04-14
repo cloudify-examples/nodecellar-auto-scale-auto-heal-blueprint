@@ -48,6 +48,8 @@ Using the IP & PORT that are in the output of the command in Step 5, you can run
 
 Depending on the number of shells you run this command in, the application should scale the NodeJS VM with the Nodecellar application, and add nodes to HA Proxy.
 
+To see the application scale back, you can just kill the curl loop.
+
 ### Step 7: Uninstall
 
 Now lets run the `uninstall` workflow. This will uninstall the application,
