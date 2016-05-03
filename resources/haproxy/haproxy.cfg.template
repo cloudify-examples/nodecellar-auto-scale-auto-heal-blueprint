@@ -7,12 +7,15 @@ defaults
 	timeout connect {{timeout_connect}}
 	timeout client {{timeout_client}}
 	timeout server {{timeout_server}}
+        option forceclose
 
 frontend {{frontend_id}}
+        option forceclose
 	bind *:{{frontend_port}}
 	default_backend {{default_backend}}
 
 backend {{default_backend}}
+        option forceclose
 {% for id, backend in backends.iteritems() %}
     server {{ id }} {{ backend.address }}:{{ backend.port }} maxconn {{ backend.maxconn }}
 {% endfor %}

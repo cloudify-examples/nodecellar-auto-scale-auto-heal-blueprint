@@ -77,47 +77,65 @@ outputs:
       port: { get_property: [nodecellar, port] }
 
 groups:
+groups:
 
   scale_up_group:
-    members: [haproxy]
+    members: [nodejs_host]
     policies:
-      haproxy_backend_rate_stress:
-        type: cloudify.policies.types.threshold
+      auto_scale_up:
+        type: scale_policy_type
         properties:
-          stability_time: 0
-          upper_bound: true
-          threshold: 4
-          service: .*haproxy.servers.backend.rate$
+          policy_operates_on_group: true
+          scale_limit: 6
+          scale_direction: '<'
+          scale_threshold: 6
+          service_selector: .*nodejs_host.*.process.node.cpu.percent
+          cooldown_time: 60
         triggers:
           execute_scale_workflow:
             type: cloudify.policies.triggers.execute_workflow
             parameters:
-              workflow: smart_scale
+              workflow: scale
               workflow_parameters:
                 delta: 1
                 node_id: nodecellar
                 scale_compute: true
-                min_instances: 2
-                max_instances: 6
 
   scale_down_group:
-    members: [haproxy]
+    members: [nodejs_host]
     policies:
-      haproxy_backend_rate_stress:
-        type: cloudify.policies.types.threshold
+      auto_scale_down:
+        type: scale_policy_type
         properties:
-          stability_time: 0
-          upper_bound: false
-          threshold: 1
-          service: .*haproxy.servers.backend.rate$
+          scale_limit: 2
+          scale_direction: '>'
+          scale_threshold: 1
+          service_selector: .*nodejs_host.*.process.node.cpu.percent
+          cooldown_time: 60
         triggers:
           execute_scale_workflow:
             type: cloudify.policies.triggers.execute_workflow
             parameters:
-              workflow: smart_scale
+              workflow: scale
               workflow_parameters:
                 delta: -1
                 node_id: nodecellar
                 scale_compute: true
-                min_instances: 2
-                max_instances: 6
+
+  heal_group:
+    members: [nodejs_host]
+    policies:
+      simple_autoheal_policy:
+        type: cloudify.policies.types.host_failure
+        properties:
+          service:
+            - .*nodejs_host.*.cpu.total.system
+          interval_between_workflows: 60
+        triggers:
+          auto_heal_trigger:
+            type: cloudify.policies.triggers.execute_workflow
+            parameters:
+              workflow: heal
+              workflow_parameters:
+                node_instance_id: { 'get_property': [ SELF, node_id ] }
+                diagnose_value: { 'get_property': [ SELF, diagnose ] }

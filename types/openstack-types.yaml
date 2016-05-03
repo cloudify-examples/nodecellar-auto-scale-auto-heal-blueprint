@@ -54,3 +54,12 @@ node_types:
                     config:
                       devices: x?vd[a-z]+[0-9]*$
                   NetworkCollector: {}
+                  ProcessResourcesCollector:
+                    config:
+                      enabled: true
+                      unit: B
+                      measure_collector_time: true
+                      cpu_interval: 0.5
+                      process:
+                        node:
+                          name: node

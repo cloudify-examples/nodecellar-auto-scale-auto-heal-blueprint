@@ -44,11 +44,15 @@ Hit that URL to see the application running.
 
 Using the IP & PORT that are in the output of the command in Step 5, you can run:
 
-`for i in {1..6000}; do curl http://$IP:$PORT > /dev/null; done`
+`ab -n 1000000 -c 200 http://$IP:$PORT/`
 
-Depending on the number of shells you run this command in, the application should scale the NodeJS VM with the Nodecellar application, and add nodes to HA Proxy.
+This will increase the number of requests to the application. As a result the CPU used by the node process on the nodejs_host VMs will spike above the scale up threshold. This metric is monitored by the Diamond plugin, and the Riemann auto-scale policy calls the scale workflow trigger.
 
-To see the application scale back, you can just kill the curl loop.
+Killing this command should cause the CPU to drop below the scale down threshold, and the application will scale down.
+
+### Step 7: 
+
+You can simulate a failed host by stopping or suspending a running nodejs_host VM. The Riemann failed host policy will recognize the lack of system cpu metrics reporting on the host and will trigger the heal workflow.
 
 ### Step 7: Uninstall
 

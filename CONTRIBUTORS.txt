@@ -1,4 +1,0 @@
-N: Danilo Cianciulli
-W: cianciullidanilo@gmail.com
-D: Modified the original scale workflow to control minimum and maximum instances.
-
