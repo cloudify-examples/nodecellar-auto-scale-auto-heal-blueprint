@@ -1,0 +1,14 @@
+tosca_definitions_version: cloudify_dsl_1_3
+
+node_templates:
+
+    ###########################################################
+    # An ip to be attached to the haproxy frontend host, since
+    # eventually we want to be able to access it
+    # from any machine, on any network.
+    ###########################################################
+
+    nodecellar_ip:
+      type: cloudify.openstack.nodes.FloatingIP
+      properties:
+        openstack_config: { get_input: openstack_config }

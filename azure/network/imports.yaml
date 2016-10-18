@@ -1,0 +1,16 @@
+tosca_definitions_version: cloudify_dsl_1_3
+
+inputs:
+
+  # Existing manager resources
+  mgr_resource_group_name:
+    type: string
+    required: true
+
+  mgr_virtual_network_name:
+    type: string
+    required: true
+
+  mgr_subnet_name:
+    type: string
+    required: true

@@ -1,0 +1,43 @@
+tosca_definitions_version: cloudify_dsl_1_3
+
+imports:
+  - https://raw.githubusercontent.com/cloudify-cosmo/cloudify-azure-plugin/1.4/plugin.yaml
+  - ../types/haproxy/haproxy.yaml
+  - ../groups.yaml
+
+inputs:
+
+  subscription_id:
+    type: string
+    required: false
+
+  tenant_id:
+    type: string
+    required: false
+
+  client_id:
+    type: string
+    required: false
+
+  client_secret:
+    type: string
+    required: false
+
+  location:
+    default: eastus
+
+  retry_after:
+    default: 30
+
+  resource_prefix:
+    default: ex
+
+  resource_suffix:
+    default: 0
+
+  azure_configuration:
+    default:
+      subscription_id: { get_input: subscription_id }
+      tenant_id: { get_input: tenant_id }
+      client_id: { get_input: client_id }
+      client_secret: { get_input: client_secret }

@@ -1,0 +1,82 @@
+tosca_definitions_version: cloudify_dsl_1_3
+
+node_templates:
+
+  network_security_group:
+    type: cloudify.azure.nodes.network.NetworkSecurityGroup
+    properties:
+      name: {concat:[{get_input: resource_prefix},nsg,{get_input: resource_suffix}]}
+      location: { get_input: location }
+      azure_config: { get_input: azure_configuration }
+      retry_after: { get_input: retry_after }
+      resource_config:
+        securityRules:
+        - name: njssg_ssh
+          properties:
+            description: SSH access
+            protocol: Tcp
+            sourcePortRange: '*'
+            destinationPortRange: 22
+            sourceAddressPrefix: '*'
+            destinationAddressPrefix: '*'
+            priority: 102
+            access: Allow
+            direction: Inbound
+        - name: njssg_http
+          properties:
+            description: HTTP access
+            protocol: Tcp
+            sourcePortRange: '*'
+            destinationPortRange: { get_property: [ nodecellar, port ] }
+            sourceAddressPrefix: '*'
+            destinationAddressPrefix: '*'
+            priority: 103
+            access: Allow
+            direction: Inbound
+        - name: njssg_mongoa
+          properties:
+            description: Mongo access
+            protocol: Tcp
+            sourcePortRange: '*'
+            destinationPortRange: { get_property: [ mongod, port ] }
+            sourceAddressPrefix: '*'
+            destinationAddressPrefix: '*'
+            priority: 104
+            access: Allow
+            direction: Inbound
+        - name: njssg_mongob
+          properties:
+            description: Mongo API access
+            protocol: Tcp
+            sourcePortRange: '*'
+            destinationPortRange: 28017
+            sourceAddressPrefix: '*'
+            destinationAddressPrefix: '*'
+            priority: 105
+            access: Allow
+            direction: Inbound
+        - name: njssg_hapweb
+          properties:
+            description: HAPROXY Web access
+            protocol: Tcp
+            sourcePortRange: '*'
+            destinationPortRange: { get_property: [ haproxy, frontend_port ]}
+            sourceAddressPrefix: '*'
+            destinationAddressPrefix: '*'
+            priority: 106
+            access: Allow
+            direction: Inbound
+        - name: njssg_hapapi
+          properties:
+            description: HAPROXY API access
+            protocol: Tcp
+            sourcePortRange: '*'
+            destinationPortRange:  { get_property: [ haproxy, statistics_port ]}
+            sourceAddressPrefix: '*'
+            destinationAddressPrefix: '*'
+            priority: 107
+            access: Allow
+            direction: Inbound
+    relationships:
+    - type: cloudify.azure.relationships.contained_in_resource_group
+      target: resource_group
