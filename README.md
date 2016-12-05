@@ -2,7 +2,7 @@
 
 This is a fork of the Cloudify Nodecellar Example.
 
-It's main purpose is to demonstrate scaling a Node JS Webserver Backend with a Node JS Frontend.
+It's main purpose is to demonstrate scaling a MongoDB Webserver Backend with a Node JS Frontend.
 
 ### Step 1: Upload the blueprint
 
