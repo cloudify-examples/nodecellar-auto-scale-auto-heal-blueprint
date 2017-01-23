@@ -3,6 +3,9 @@ node_types:
 
   nodecellar.nodes.Host:
     derived_from: cloudify.hostpool.nodes.Host
+    properties:
+      os:
+        default: { get_input: host_pool_os_type }
     interfaces:
       cloudify.interfaces.lifecycle:
         create:

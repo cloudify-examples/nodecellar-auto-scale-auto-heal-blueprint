@@ -1,3 +1,5 @@
+[![Build Status](https://circleci.com/gh/cloudify-examples/nodecellar-auto-scale-auto-heal-blueprint.svg?style=shield&circle-token=:circle-token)](https://circleci.com/gh/cloudify-examples/nodecellar-auto-scale-auto-heal-blueprint)
+
 # Cloudify Nodecellar Example
 
 This is a fork of the Cloudify Nodecellar Example.

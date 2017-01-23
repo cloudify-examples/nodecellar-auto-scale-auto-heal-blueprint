@@ -1,0 +1,44 @@
+tosca_definitions_version: cloudify_dsl_1_3
+
+node_templates:
+
+  mongo_host_nic_ip_cfg:
+    type: cloudify.azure.nodes.network.IPConfiguration
+    properties:
+      name: {concat:[{get_input: resource_prefix},mongo_host_ip_cfg,{get_input: resource_suffix}]}
+      location: { get_input: location }
+      azure_config: { get_input: azure_configuration }
+      retry_after: { get_input: retry_after }
+      resource_config:
+        privateIPAllocationMethod: Dynamic
+    relationships:
+    - type: cloudify.azure.relationships.ip_configuration_connected_to_subnet
+      target: subnet
+
+  nodejs_host_nic_ip_cfg:
+    type: cloudify.azure.nodes.network.IPConfiguration
+    properties:
+      name: {concat:[{get_input: resource_prefix},nodejs_host_ip_cfg,{get_input: resource_suffix}]}
+      location: { get_input: location }
+      azure_config: { get_input: azure_configuration }
+      retry_after: { get_input: retry_after }
+      resource_config:
+        privateIPAllocationMethod: Dynamic
+    relationships:
+    - type: cloudify.azure.relationships.ip_configuration_connected_to_subnet
+      target: subnet
+
+  haproxy_host_nic_ip_cfg:
+    type: cloudify.azure.nodes.network.IPConfiguration
+    properties:
+      name: {concat:[{get_input: resource_prefix},haproxy_host_ip_cfg,{get_input: resource_suffix}]}
+      location: { get_input: location }
+      azure_config: { get_input: azure_configuration }
+      retry_after: { get_input: retry_after }
+      resource_config:
+        privateIPAllocationMethod: Dynamic
+    relationships:
+    - type: cloudify.azure.relationships.ip_configuration_connected_to_subnet
+      target: subnet
+    - type: cloudify.azure.relationships.ip_configuration_connected_to_public_ip
+      target: nodecellar_ip

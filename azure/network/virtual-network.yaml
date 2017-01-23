@@ -1,0 +1,15 @@
+tosca_definitions_version: cloudify_dsl_1_3
+
+node_templates:
+
+  virtual_network:
+    type: cloudify.azure.nodes.network.VirtualNetwork
+    properties:
+      resource_group_name: { get_input: mgr_resource_group_name }
+      name: { get_input: mgr_virtual_network_name }
+      azure_config: { get_input: azure_configuration }
+      use_external_resource: true
+      location: { get_input: location }
+    relationships:
+    - type: cloudify.azure.relationships.contained_in_resource_group
+      target: resource_group
