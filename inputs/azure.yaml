@@ -1,0 +1,21 @@
+resource_prefix: cfy
+resource_suffix: ''
+
+subscription_id: '' # your subscription ID
+tenant_id: '' # your tenant ID
+client_id: '' # your client ID
+client_secret: '' # your client secret
+
+mgr_resource_group_name: cfyrg0
+mgr_virtual_network_name: cfyvn0
+mgr_subnet_name: cfyvns0
+
+azure_agent_config:
+  user: ubuntu
+  key: ~/.ssh/agent_key.pem
+  install_method: remote
+
+vm_os_pubkeys:
+  - path: {concat:[ '/home/', { get_input: vm_os_username }, '/.ssh/authorized_keys' ]}
+    keyData:
+      "" # this is some public key like the content of id_rsa.pub.
