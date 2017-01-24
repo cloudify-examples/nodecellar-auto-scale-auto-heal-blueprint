@@ -1,0 +1,3 @@
+image_id: '' # The UUID of an Openstack Ubuntu 14.04 Image.
+flavor_id: '' # The UUID of an Openstack Flavor
+agent_user: ubuntu
