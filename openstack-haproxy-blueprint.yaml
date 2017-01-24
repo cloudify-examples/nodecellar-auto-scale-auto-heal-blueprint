@@ -23,17 +23,17 @@ imports:
 
 inputs:
 
-  image:
+  image_id:
     description: >
-      Image to be used when launching agent VM's
+      An Openstack Image ID. Tested with a Ubuntu 14.04 image.
 
-  flavor:
+  flavor_id:
     description: >
-      Flavor of the agent VM's
+      An Openstack Flavor ID.
 
   agent_user:
-    description: >
-      User for connecting to agent VM's
+    description: The user name of the agent on the instance created from the image_id.
+    default: ubuntu
 
 node_templates:
 

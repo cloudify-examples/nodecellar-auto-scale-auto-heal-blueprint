@@ -25,15 +25,17 @@ inputs:
 
   image:
     description: >
-      Image to be used when launching agent VM's
+      An AWS AMI. Tested with a Ubuntu 14.04 image.
 
   size:
     description: >
-      Flavor of the agent VM's
+      The AWS instance_type. Tested with m3.medium, although that is unnecessarily large.
+    default: m3.medium
 
   agent_user:
     description: >
-      User for connecting to agent VM's
+      The username of the agent running on the instance created from the image.
+    default: ubuntu
 
 node_templates:
 

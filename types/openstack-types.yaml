@@ -14,8 +14,8 @@ node_types:
           user: { get_input: agent_user }
       server:
         default:
-          image: { get_input: image }
-          flavor: { get_input: flavor }
+          image: { get_input: image_id }
+          flavor: { get_input: flavor_id }
     interfaces:
 
       ###########################################################
