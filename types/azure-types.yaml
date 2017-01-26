@@ -8,8 +8,6 @@ node_types:
   nodecellar.nodes.MonitoredServer:
     derived_from: cloudify.azure.nodes.compute.VirtualMachine
     properties:
-      name:
-        default: {concat:[{get_input: resource_prefix},vm,{get_input: resource_suffix}]}
       location:
         default: { get_input: location }
       retry_after:
@@ -29,7 +27,6 @@ node_types:
               sku: { get_input: vm_image_sku }
               version: { get_input: vm_image_version }
           osProfile:
-            computerName: { get_property: [SELF, name] }
             adminUsername: { get_input: vm_os_username }
             adminPassword: { get_input: vm_os_password }
             linuxConfiguration:
@@ -37,10 +34,7 @@ node_types:
                 publicKeys: { get_input: vm_os_pubkeys }
               disablePasswordAuthentication: { get_input: vm_os_pubkey_auth_only }
       agent_config:
-        default:
-          user: { get_input: vm_os_username }
-          password: { get_input: vm_os_password }
-          install_method: remote
+        default: { get_input: agent_config }
     interfaces:
 
       ###########################################################
