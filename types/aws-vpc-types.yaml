@@ -15,10 +15,6 @@ node_types:
         default: { get_input: image }
       instance_type:
         default: { get_input: size }
-      agent_config:
-        default:
-          install_method: remote
-          port: 22
     interfaces:
 
       ###########################################################

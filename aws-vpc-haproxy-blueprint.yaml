@@ -1,0 +1,286 @@
+tosca_definitions_version: cloudify_dsl_1_3
+
+description: >
+  This Blueprint installs the nodecellar application
+  on an amazon ec2 cloud environment.
+
+imports:
+  - http://www.getcloudify.org/spec/cloudify/3.4/types.yaml
+  - http://www.getcloudify.org/spec/aws-plugin/1.4.3/plugin.yaml
+  - http://www.getcloudify.org/spec/diamond-plugin/1.3.5/plugin.yaml
+  - types/nodecellar.yaml
+  - types/aws-ec2-types.yaml
+  - types/haproxy/haproxy.yaml
+  - types/scale/scale.yaml
+
+#####################################################################################
+# inputs section allows the user to use same
+# blueprint for creating different deployments, each one
+# with its own parameters.
+# to specify deployment inputs run:
+#   - cfy deployments create -b <blueprint_id> -d <deployment_id> -i inputs.json
+#####################################################################################
+
+inputs:
+
+  image:
+    description: >
+      An AWS AMI. Tested with a Ubuntu 14.04 image.
+
+  size:
+    description: >
+      The AWS instance_type. Tested with m3.medium, although that is unnecessarily large.
+    default: m3.medium
+
+  agent_user:
+    description: >
+      The username of the agent running on the instance created from the image.
+    default: ubuntu
+
+node_templates:
+
+  nodecellar:
+    type: nodecellar.nodes.NodecellarApplicationModule
+    relationships:
+
+      ################################
+      # Setting the mongo connection
+      ################################
+
+      - type: node_connected_to_mongo
+        target: mongod
+
+      ################################
+      # Setting the nodejs connection
+      ################################
+
+      - type: node_contained_in_nodejs
+        target: nodejs
+
+      ################################
+      # Setting the haproxy connection
+      ################################
+
+      - type: app_connected_to_haproxy
+        target: haproxy
+
+  mongod:
+    type: nodecellar.nodes.MonitoredMongoDatabase
+    relationships:
+      - type: cloudify.relationships.contained_in
+        target: mongod_host
+
+  nodejs:
+    type: nodecellar.nodes.NodeJSServer
+    relationships:
+      - type: cloudify.relationships.contained_in
+        target: nodejs_host
+
+  ########################################
+  # Note: only ubuntu haproxy installation
+  # is supported.
+  ########################################
+
+  haproxy:
+    type: nodecellar.nodes.MonitoredHAProxy
+    properties:
+      backend_app_port: { get_property: [ nodecellar, port ] }
+    relationships:
+      - target: haproxy_frontend_host
+        type: cloudify.relationships.contained_in
+
+  mongod_host:
+    type: nodecellar.nodes.MonitoredServer
+    relationships:
+
+      ###########################################################
+      # Attaching the mongo security group to the mongo host
+      ###########################################################
+
+      - type: cloudify.aws.relationships.instance_connected_to_security_group
+        target: mongod_security_group
+
+  nodejs_host:
+    type: nodecellar.nodes.MonitoredServer
+    ###########################################################
+    # Setting the nodejs_host initial number of instances to 2.
+    # The default values for instances.deploy is 1.
+    ###########################################################
+
+    instances:
+      deploy: 2
+
+    relationships:
+
+      ###########################################################
+      # Attaching the nodecellar security group to the nodejs host
+      ###########################################################
+
+      - type: cloudify.aws.relationships.instance_connected_to_security_group
+        target: nodecellar_security_group
+
+  haproxy_frontend_host:
+    type: nodecellar.nodes.MonitoredServer
+    relationships:
+
+      ###########################################################
+      # Attaching an ip to the haproxy frontend host
+      ###########################################################
+
+      - type: cloudify.aws.relationships.instance_connected_to_elastic_ip
+        target: nodecellar_ip
+
+      ###########################################################
+      # Attaching the haproxy frontend security group to
+      # the haproxy frontend host
+      ###########################################################
+
+      - type: cloudify.aws.relationships.instance_connected_to_security_group
+        target: haproxy_frontend_security_group
+
+  ###########################################################
+  # A security group to enable access to the mongo host
+  # using the port of the mongo node.
+  #
+  # We need this so that the nodecellar application can
+  # comminicate with MongoDB, since they are running on
+  # different hosts.
+  ###########################################################
+
+  mongod_security_group:
+    type: cloudify.aws.nodes.SecurityGroup
+    properties:
+      description: Security Group for Mongo VMs
+      rules:
+        - ip_protocol: tcp
+          from_port: { get_property: [ mongod, port ] }
+          to_port: { get_property: [ mongod, port ] }
+          cidr_ip: 0.0.0.0/0
+        - ip_protocol: tcp
+          from_port: 28017
+          to_port: 28017
+          cidr_ip: 0.0.0.0/0
+
+  ###########################################################
+  # A security group to enable access to the nodejs host
+  # using the port of the nodejs node.
+  #
+  # We need this so that the nodecellar application can
+  # receive web traffic.
+  ###########################################################
+
+  nodecellar_security_group:
+    type: cloudify.aws.nodes.SecurityGroup
+    properties:
+      description: Security Group for Nodecellar VMs
+      rules:
+        - ip_protocol: tcp
+          from_port: { get_property: [ nodecellar, port ] }
+          to_port: { get_property: [ nodecellar, port ] }
+          cidr_ip: 0.0.0.0/0
+
+  ###########################################################
+  # A security group to enable access to the haproxy frontend
+  # host using the haproxy frontend_port property.
+  # In addition, we open the statistics port (9000) of haproxy
+  #
+  # This security group will be attached to the
+  # haproxy_frontend_host
+  ###########################################################
+
+  haproxy_frontend_security_group:
+    type: cloudify.aws.nodes.SecurityGroup
+    properties:
+      description: Security Group for HAProxy VM
+      rules:
+        - ip_protocol: tcp
+          from_port: { get_property: [ haproxy, frontend_port ] }
+          to_port: { get_property: [ haproxy, frontend_port ] }
+          cidr_ip: 0.0.0.0/0
+        - ip_protocol: tcp
+          from_port: { get_property: [ haproxy, statistics_port ]}
+          to_port: { get_property: [ haproxy, statistics_port ]}
+          cidr_ip: 0.0.0.0/0
+
+  ###########################################################
+  # An ip to be attached to the nodejs host, since
+  # eventually we want to be able to access it
+  # from any machine, on any network.
+  ###########################################################
+
+  nodecellar_ip:
+    type: cloudify.aws.nodes.ElasticIP
+
+###########################################################
+# This outputs section exposes the application endpoint.
+# You can access it by running:
+#   - cfy deployments -d <deployment_id> outputs
+###########################################################
+
+outputs:
+  endpoint:
+    description: Web application endpoint
+    value:
+      ip_address: { get_attribute: [ nodecellar_ip, aws_resource_id ] }
+      port: { get_property: [ haproxy, frontend_port ] }
+
+groups:
+
+  scale_up_group:
+    members: [nodejs_host]
+    policies:
+      auto_scale_up:
+        type: scale_policy_type
+        properties:
+          policy_operates_on_group: true
+          scale_limit: 6
+          scale_direction: '<'
+          scale_threshold: 3
+          service_selector: .*nodejs_host.*.process.node.cpu.percent
+          cooldown_time: 60
+        triggers:
+          execute_scale_workflow:
+            type: cloudify.policies.triggers.execute_workflow
+            parameters:
+              workflow: scale
+              workflow_parameters:
+                delta: 1
+                scalable_entity_name: nodejs_host
+
+  scale_down_group:
+    members: [nodejs_host]
+    policies:
+      auto_scale_down:
+        type: scale_policy_type
+        properties:
+          scale_limit: 2
+          scale_direction: '>'
+          scale_threshold: 1
+          service_selector: .*nodejs_host.*.process.node.cpu.percent
+          cooldown_time: 60
+        triggers:
+          execute_scale_workflow:
+            type: cloudify.policies.triggers.execute_workflow
+            parameters:
+              workflow: scale
+              workflow_parameters:
+                delta: -1
+                scalable_entity_name: nodejs_host
+
+  heal_group:
+    members: [nodejs_host]
+    policies:
+      simple_autoheal_policy:
+        type: cloudify.policies.types.host_failure
+        properties:
+          service:
+            - .*nodejs_host.*.cpu.total.system
+          interval_between_workflows: 60
+        triggers:
+          auto_heal_trigger:
+            type: cloudify.policies.triggers.execute_workflow
+            parameters:
+              workflow: heal
+              workflow_parameters:
+                node_instance_id: { 'get_property': [ SELF, node_id ] }
+                diagnose_value: { 'get_property': [ SELF, diagnose ] }
