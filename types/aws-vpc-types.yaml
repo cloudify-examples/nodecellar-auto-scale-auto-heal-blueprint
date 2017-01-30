@@ -8,13 +8,20 @@ node_types:
   nodecellar.nodes.MonitoredServer:
     derived_from: cloudify.aws.nodes.Instance
     properties:
-      cloudify_agent:
-        default:
-          user: { get_input: agent_user }
+      aws_config:
+        default: { get_input: aws_config }
       image_id:
-        default: { get_input: image }
+        default: { get_input: ami_image_id }
       instance_type:
-        default: { get_input: size }
+        default: { get_input: instance_type }
+      parameters:
+        default:
+          placement: { get_property: [ public_subnet, availability_zone ] }
+      agent_config:
+        default:
+          install_method: remote
+          port: 22
+          key: { get_property: [ key, private_key_path ] }
     interfaces:
 
       ###########################################################
