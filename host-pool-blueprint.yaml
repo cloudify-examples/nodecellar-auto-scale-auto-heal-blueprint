@@ -8,7 +8,7 @@ description: >
 imports:
   - http://www.getcloudify.org/spec/cloudify/3.4/types.yaml
   - http://www.getcloudify.org/spec/host-pool-plugin/1.3.1/plugin.yaml
-  - http://www.getcloudify.org/spec/diamond-plugin/1.3.5/plugin.yaml
+  - http://www.getcloudify.org/spec/diamond-plugin/1.3.3/plugin.yaml
   - types/nodecellar.yaml
   - types/host-pool-types.yaml
   - types/scale/scale.yaml
