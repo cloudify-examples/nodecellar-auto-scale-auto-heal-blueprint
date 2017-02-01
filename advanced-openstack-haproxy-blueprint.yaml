@@ -340,7 +340,6 @@ node_templates:
   external_network:
     type: cloudify.openstack.nodes.Network
     properties:
-      controller_queue: { get_input: controller_queue }
       openstack_config: { get_input: openstack_config }
       use_external_resource: true
       resource_id: { get_input: external_network_name }
@@ -348,7 +347,6 @@ node_templates:
   key:
     type: cloudify.openstack.nodes.KeyPair
     properties:
-      controller_queue: { get_input: controller_queue }
       openstack_config: { get_input: openstack_config }
       resource_id: { get_input: key_name }
       private_key_path: { get_input: private_key_path }

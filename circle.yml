@@ -23,6 +23,8 @@ test:
     - cfy blueprints validate -p aws-ec2-haproxy-blueprint.yaml
     - cfy blueprints validate -p host-pool-blueprint.yaml
     - cfy blueprints validate -p openstack-haproxy-blueprint.yaml
+    - cfy blueprints validate -p advanced-openstack-haproxy-blueprint.yaml
+    - cfy blueprints validate -p aws-vpc-haproxy-blueprint.yaml
 
 deployment:
   release:
