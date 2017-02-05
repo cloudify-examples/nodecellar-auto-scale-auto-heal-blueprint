@@ -248,7 +248,6 @@ node_templates:
   storage_account:
     type: cloudify.azure.nodes.storage.StorageAccount
     properties:
-      name: {concat:[{get_input: resource_prefix},asa,{get_input: resource_suffix}]}
       location: { get_input: location }
       azure_config: *azure_config
       retry_after: { get_input: retry_after }
