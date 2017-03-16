@@ -9,9 +9,11 @@ node_types:
   nodecellar.nodes.MonitoredServer:
     derived_from: cloudify.openstack.nodes.Server
     properties:
-      cloudify_agent:
+      agent_config:
         default:
           user: { get_input: agent_user }
+          key: { get_input: private_key_path }
+          install_method: remote
       server:
         default:
           image: { get_input: image_id }

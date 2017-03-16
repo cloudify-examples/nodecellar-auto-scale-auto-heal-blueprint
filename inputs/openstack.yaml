@@ -1,3 +1,13 @@
-image_id: '' # The UUID of an Openstack Ubuntu 14.04 Image.
-flavor_id: '' # The UUID of an Openstack Flavor
+keystone_username: ''
+keystone_password: ''
+keystone_tenant_name: ''
+keystone_url: ''
+region: ''
+image_id: ''
+flavor_id: ''
 agent_user: ubuntu
+agents_security_group: ''
+network_name: ''
+floating_network_name: ''
+key_pair_name: ''
+private_key_path: ''
