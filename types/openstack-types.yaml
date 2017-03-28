@@ -9,13 +9,20 @@ node_types:
   nodecellar.nodes.MonitoredServer:
     derived_from: cloudify.openstack.nodes.Server
     properties:
-      cloudify_agent:
+      openstack_config:
+        default: { get_input: openstack_config }
+      agent_config:
         default:
           user: { get_input: agent_user }
+          install_method: remote
+          port: 22
+          key: { get_property: [ key, private_key_path ] }
       server:
         default:
           image: { get_input: image_id }
           flavor: { get_input: flavor_id }
+      management_network_name:
+        default: { get_property: [ public_network, resource_id ] }
     interfaces:
 
       ###########################################################
