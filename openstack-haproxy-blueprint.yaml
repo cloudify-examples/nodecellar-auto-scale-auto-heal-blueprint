@@ -5,9 +5,9 @@ description: >
   an haproxy instance on an openstack cloud environment.
 
 imports:
-  - http://www.getcloudify.org/spec/cloudify/3.4/types.yaml
-  - http://www.getcloudify.org/spec/openstack-plugin/2.0/plugin.yaml
-  - http://www.getcloudify.org/spec/diamond-plugin/1.3.3/plugin.yaml
+  - http://www.getcloudify.org/spec/cloudify/4.0/types.yaml
+  - http://www.getcloudify.org/spec/openstack-plugin/2.0.1/plugin.yaml
+  - http://www.getcloudify.org/spec/diamond-plugin/1.3.5/plugin.yaml
   - types/nodecellar.yaml
   - types/openstack-types.yaml
   - types/haproxy/haproxy.yaml
@@ -23,33 +23,21 @@ imports:
 
 inputs:
 
-  keystone_username:
-    default: ''
-    type: string
+  image:
+    description: >
+      An Openstack Image ID. Tested with a Ubuntu 14.04 image.
 
-  keystone_password:
-    default: ''
-    type: string
+  flavor:
+    description: >
+      An Openstack Flavor ID.
 
-  keystone_tenant_name:
-    default: ''
-    type: string
-
-  keystone_url:
-    default: ''
-    type: string
+  agent_user:
+    description: The user name of the agent on the instance created from the image.
+    default: ubuntu
 
   region:
     default: ''
     type: string
-
-  openstack_config:
-    default:
-      username: { get_input: keystone_username }
-      password: { get_input: keystone_password }
-      tenant_name: { get_input: keystone_tenant_name }
-      auth_url: { get_input: keystone_url }
-      region: { get_input: region }
 
   key_name:
     default: nodecellar
@@ -75,17 +63,14 @@ inputs:
   private_subnet_name:
     description: The name of the private network subnet.
 
-  image_id:
-    description: >
-      An Openstack Image ID. Tested with a Ubuntu 14.04 image.
+dsl_definitions:
 
-  flavor_id:
-    description: >
-      An Openstack Flavor ID.
-
-  agent_user:
-    description: The user name of the agent on the instance created from the image_id.
-    default: ubuntu
+  openstack_config: &openstack_config
+    username: { get_secret: keystone_username }
+    password: { get_secret: keystone_password }
+    tenant_name: { get_secret: keystone_tenant_name }
+    auth_url: { get_secret: keystone_url }
+    region: { get_input: region }
 
 node_templates:
 
@@ -142,6 +127,7 @@ node_templates:
   mongod_host:
     type: nodecellar.nodes.MonitoredServer
     properties:
+      openstack_config: *openstack_config
       management_network_name: { get_property: [ private_network, resource_id ] }
     relationships:
       - target: mongodb_host_port
@@ -160,6 +146,7 @@ node_templates:
     instances:
       deploy: 1
     properties:
+      openstack_config: *openstack_config
       management_network_name: { get_property: [ private_network, resource_id ] }
     relationships:
       - target: nodejs_host_port
@@ -169,6 +156,8 @@ node_templates:
 
   haproxy_frontend_host:
     type: nodecellar.nodes.MonitoredServer
+    properties:
+      openstack_config: *openstack_config
     relationships:
       - target: haproxy_host_port
         type: cloudify.openstack.server_connected_to_port
@@ -178,7 +167,7 @@ node_templates:
   mongodb_host_port:
     type: cloudify.openstack.nodes.Port
     properties:
-      openstack_config: { get_input: openstack_config }
+      openstack_config: *openstack_config
     relationships:
       - type: cloudify.relationships.contained_in
         target: private_network
@@ -190,7 +179,7 @@ node_templates:
   nodejs_host_port:
     type: cloudify.openstack.nodes.Port
     properties:
-      openstack_config: { get_input: openstack_config }
+      openstack_config: *openstack_config
     relationships:
       - type: cloudify.relationships.contained_in
         target: private_network
@@ -202,7 +191,7 @@ node_templates:
   haproxy_host_port:
     type: cloudify.openstack.nodes.Port
     properties:
-      openstack_config: { get_input: openstack_config }
+      openstack_config: *openstack_config
     relationships:
       - type: cloudify.relationships.contained_in
         target: public_network
@@ -225,7 +214,7 @@ node_templates:
   mongod_security_group:
     type: cloudify.openstack.nodes.SecurityGroup
     properties:
-      openstack_config: { get_input: openstack_config }
+      openstack_config: *openstack_config
       security_group:
         name: mongod_security_group
       rules:
@@ -246,7 +235,7 @@ node_templates:
   nodecellar_security_group:
     type: cloudify.openstack.nodes.SecurityGroup
     properties:
-      openstack_config: { get_input: openstack_config }
+      openstack_config: *openstack_config
       security_group:
         name: nodecellar_security_group
       rules:
@@ -267,7 +256,7 @@ node_templates:
   haproxy_frontend_security_group:
     type: cloudify.openstack.nodes.SecurityGroup
     properties:
-      openstack_config: { get_input: openstack_config }
+      openstack_config: *openstack_config
       security_group:
         name: haproxy_frontend_security_group
       rules:
@@ -287,14 +276,14 @@ node_templates:
   nodecellar_ip:
     type: cloudify.openstack.nodes.FloatingIP
     properties:
-      openstack_config: { get_input: openstack_config }
+      openstack_config: *openstack_config
       floatingip:
         floating_network_name: { get_property: [ external_network, resource_id ] }
 
   private_subnet:
     type: cloudify.openstack.nodes.Subnet
     properties:
-      openstack_config: { get_input: openstack_config }
+      openstack_config: *openstack_config
       use_external_resource: true
       resource_id: { get_input: private_subnet_name }
     relationships:
@@ -304,14 +293,14 @@ node_templates:
   private_network:
     type: cloudify.openstack.nodes.Network
     properties:
-      openstack_config: { get_input: openstack_config }
+      openstack_config: *openstack_config
       use_external_resource: true
       resource_id: { get_input: private_network_name }
 
   public_subnet:
     type: cloudify.openstack.nodes.Subnet
     properties:
-      openstack_config: { get_input: openstack_config }
+      openstack_config: *openstack_config
       use_external_resource: true
       resource_id: { get_input: public_subnet_name }
     relationships:
@@ -323,14 +312,14 @@ node_templates:
   public_network:
     type: cloudify.openstack.nodes.Network
     properties:
-      openstack_config: { get_input: openstack_config }
+      openstack_config: *openstack_config
       use_external_resource: true
       resource_id: { get_input: public_network_name }
 
   router:
     type: cloudify.openstack.nodes.Router
     properties:
-      openstack_config: { get_input: openstack_config }
+      openstack_config: *openstack_config
       use_external_resource: true
       resource_id: { get_input: router_name }
     relationships:
@@ -340,14 +329,14 @@ node_templates:
   external_network:
     type: cloudify.openstack.nodes.Network
     properties:
-      openstack_config: { get_input: openstack_config }
+      openstack_config: *openstack_config
       use_external_resource: true
       resource_id: { get_input: external_network_name }
 
   key:
     type: cloudify.openstack.nodes.KeyPair
     properties:
-      openstack_config: { get_input: openstack_config }
+      openstack_config: *openstack_config
       resource_id: { get_input: key_name }
       private_key_path: { get_input: private_key_path }
 
