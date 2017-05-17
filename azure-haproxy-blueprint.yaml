@@ -118,8 +118,8 @@ inputs:
 
   cloudify_manager_agent_key_path:
     description: >
-      This is the private key that matches the public key in input vm_os_username_public_key_data.
-    default: /home/cloudify/.ssh/id_rsa
+      This is the private key that matches the public key in input vm_os_username_public_key_data. Must have read permissions for cfyuser
+    default: /etc/cloudify/.ssh/id_rsa
 
   agent_config:
     default:
@@ -231,7 +231,8 @@ node_templates:
   resource_group:
     type: cloudify.azure.nodes.ResourceGroup
     properties:
-      name: {concat:[{get_input: resource_prefix},arg,{get_input: resource_suffix}]}
+      name: { get_input: mgr_resource_group_name }
+      use_external_resource: true
       location: { get_input: location }
       azure_config: *azure_config
 
