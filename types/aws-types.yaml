@@ -14,7 +14,7 @@ node_types:
         default: { get_input: instance_type }
       parameters:
         default:
-          placement: { get_property: [ public_subnet, availability_zone ] }
+          placement: { get_secret: availability_zone }
       agent_config:
         default:
           install_method: remote
