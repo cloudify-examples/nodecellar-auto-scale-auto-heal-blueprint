@@ -19,10 +19,9 @@ dependencies:
 test:
   override:
     - cfy init
-    - cfy blueprints validate -p azure-haproxy-blueprint.yaml
-    - cfy blueprints validate -p aws-haproxy-blueprint.yaml
-    - cfy blueprints validate -p host-pool-blueprint.yaml
-    - cfy blueprints validate -p openstack-haproxy-blueprint.yaml
+    - cfy blueprints validate azure-haproxy-blueprint.yaml
+    - cfy blueprints validate aws-haproxy-blueprint.yaml
+    - cfy blueprints validate openstack-haproxy-blueprint.yaml
 
 deployment:
   release:
