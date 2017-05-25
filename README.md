@@ -128,7 +128,7 @@ You can simulate a failed host by stopping or suspending a running nodejs_host V
 
 ### Step 4: Unnstall the demo application
 
-Now lets run the `uninstall` workflow. This will uninstall the application,
+Now run the `uninstall` workflow. This will uninstall the application,
 as well as delete all related resources. <br>
 
 ```shell
