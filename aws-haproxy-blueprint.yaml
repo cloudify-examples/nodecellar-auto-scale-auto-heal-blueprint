@@ -22,15 +22,10 @@ imports:
 
 inputs:
 
-  key_name:
-    default: nodecellar
-
-  private_key_path:
-    default: ~/.ssh/nodecellar.pem
-
   ami:
     description: >
       An AWS AMI. Tested with a Ubuntu 14.04 image.
+    default: { get_secret: ubuntu_trusty_image }
 
   instance_type:
     description: >
@@ -50,7 +45,33 @@ dsl_definitions:
       ec2_region_name: { get_secret: ec2_region_name }
       ec2_region_endpoint: { get_secret: ec2_region_endpoint }
 
+node_types:
+
+  cloudify.nodes.CloudConfig:
+    derived_from: cloudify.nodes.Root
+    properties:
+      resource_config:
+        default:
+          encode_base64: false
+
 node_templates:
+
+  cloudify_host_cloud_config:
+    type: cloudify.nodes.CloudConfig
+    interfaces:
+      cloudify.interfaces.lifecycle:
+        create:
+          implementation: scripts/cloud_config/create.py
+          executor: central_deployment_agent
+          inputs:
+            cloud_config:
+              users:
+              - name: { get_input: agent_user }
+                groups: sudo
+                shell: /bin/bash
+                sudo: ['ALL=(ALL) NOPASSWD:ALL']
+                ssh-authorized-keys:
+                - { get_secret: agent_key_public }
 
   nodecellar:
     type: nodecellar.nodes.NodecellarApplicationModule
@@ -106,8 +127,6 @@ node_templates:
     type: nodecellar.nodes.MonitoredServer
     properties:
       aws_config: *aws_config
-      parameters:
-        placement: { get_property: [ private_subnet, availability_zone ] }
     relationships:
 
       ###########################################################
@@ -118,8 +137,6 @@ node_templates:
         target: mongod_security_group
       - type: cloudify.aws.relationships.instance_contained_in_subnet
         target: private_subnet
-      - type: cloudify.aws.relationships.instance_connected_to_keypair
-        target: key
 
   nodejs_host:
     type: nodecellar.nodes.MonitoredServer
@@ -132,8 +149,6 @@ node_templates:
       deploy: 2
     properties:
       aws_config: *aws_config
-      parameters:
-        placement: { get_property: [ private_subnet, availability_zone ] }
     relationships:
 
       ###########################################################
@@ -144,8 +159,6 @@ node_templates:
         target: nodecellar_security_group
       - type: cloudify.aws.relationships.instance_contained_in_subnet
         target: private_subnet
-      - type: cloudify.aws.relationships.instance_connected_to_keypair
-        target: key
 
   haproxy_frontend_host:
     type: nodecellar.nodes.MonitoredServer
@@ -169,8 +182,6 @@ node_templates:
         target: haproxy_frontend_security_group
       - type: cloudify.aws.relationships.instance_contained_in_subnet
         target: public_subnet
-      - type: cloudify.aws.relationships.instance_connected_to_keypair
-        target: key
 
   ###########################################################
   # A security group to enable access to the mongo host
@@ -303,13 +314,9 @@ node_templates:
       use_external_resource: true
       resource_id: { get_secret: vpc_id }
       cidr_block: N/A
-
-  key:
-    type: cloudify.aws.nodes.KeyPair
-    properties:
-      aws_config: *aws_config
-      resource_id: { get_input: key_name }
-      private_key_path: { get_input: private_key_path }
+    relationships:
+      - type: cloudify.relationships.depends_on
+        target: cloudify_host_cloud_config
 
 ###########################################################
 # This outputs section exposes the application endpoint.

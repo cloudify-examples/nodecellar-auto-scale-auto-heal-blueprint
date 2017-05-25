@@ -26,20 +26,16 @@ inputs:
   image:
     description: >
       An Openstack Image ID. Tested with a Ubuntu 14.04 image.
+    default: { get_secret: ubuntu_trusty_image }
 
   flavor:
     description: >
       An Openstack Flavor ID.
+    default: { get_secret: small_image_flavor }
 
   agent_user:
     description: The user name of the agent on the instance created from the image.
     default: ubuntu
-
-  key_name:
-    default: nodecellar
-
-  private_key_path:
-    default: ~/.ssh/nodecellar.pem
 
 dsl_definitions:
 
@@ -50,7 +46,28 @@ dsl_definitions:
     auth_url: { get_secret: keystone_url }
     region: { get_secret: region }
 
+node_types:
+
+  cloudify.nodes.CloudConfig:
+    derived_from: cloudify.nodes.Root
+    properties:
+      resource_config:
+        default:
+          encode_base64: false
+
 node_templates:
+
+  cloudify_host_cloud_config:
+    type: cloudify.nodes.CloudConfig
+    interfaces:
+      cloudify.interfaces.lifecycle:
+        create:
+          implementation: scripts/cloud_config/create.py
+          executor: central_deployment_agent
+          inputs:
+            cloud_config:
+              ssh_authorized_keys:
+              - { get_secret: agent_key_public }
 
   nodecellar:
     type: nodecellar.nodes.NodecellarApplicationModule
@@ -110,8 +127,6 @@ node_templates:
     relationships:
       - target: mongodb_host_port
         type: cloudify.openstack.server_connected_to_port
-      - type: cloudify.openstack.server_connected_to_keypair
-        target: key
 
   nodejs_host:
     type: nodecellar.nodes.MonitoredServer
@@ -129,8 +144,6 @@ node_templates:
     relationships:
       - target: nodejs_host_port
         type: cloudify.openstack.server_connected_to_port
-      - type: cloudify.openstack.server_connected_to_keypair
-        target: key
 
   haproxy_frontend_host:
     type: nodecellar.nodes.MonitoredServer
@@ -139,8 +152,6 @@ node_templates:
     relationships:
       - target: haproxy_host_port
         type: cloudify.openstack.server_connected_to_port
-      - type: cloudify.openstack.server_connected_to_keypair
-        target: key
 
   mongodb_host_port:
     type: cloudify.openstack.nodes.Port
@@ -310,13 +321,9 @@ node_templates:
       openstack_config: *openstack_config
       use_external_resource: true
       resource_id: { get_secret: external_network_name }
-
-  key:
-    type: cloudify.openstack.nodes.KeyPair
-    properties:
-      openstack_config: *openstack_config
-      resource_id: { get_input: key_name }
-      private_key_path: { get_input: private_key_path }
+    relationships:
+      - type: cloudify.relationships.depends_on
+        target: cloudify_host_cloud_config
 
 ###########################################################
 # This outputs section exposes the application endpoint.
