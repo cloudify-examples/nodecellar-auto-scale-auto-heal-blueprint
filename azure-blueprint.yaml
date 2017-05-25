@@ -12,14 +12,6 @@ imports:
   - types/haproxy/haproxy.yaml
   - types/scale/scale.yaml
 
-#####################################################################################
-# inputs section allows the user to use same
-# blueprint for creating different deployments, each one
-# with its own parameters.
-# to specify deployment inputs run:
-#   - cfy deployments create -b <blueprint_id> -d <deployment_id> -i inputs.json
-#####################################################################################
-
 inputs:
 
   resource_prefix:
@@ -52,8 +44,6 @@ inputs:
     - path: {concat:[ '/home/', { get_input: agent_user }, '/.ssh/authorized_keys' ]}
       keyData: { get_secret: agent_key_public }
 
-  # Application information
-
   webserver_port:
     description: The external web server port
     default: 8080
@@ -70,25 +60,10 @@ node_templates:
   nodecellar:
     type: nodecellar.nodes.NodecellarApplicationModule
     relationships:
-
-      ################################
-      # Setting the mongo connection
-      ################################
-
       - type: node_connected_to_mongo
         target: mongod
-
-      ################################
-      # Setting the nodejs connection
-      ################################
-
       - type: node_contained_in_nodejs
         target: nodejs
-
-      ################################
-      # Setting the haproxy connection
-      ################################
-
       - type: app_connected_to_haproxy
         target: haproxy
 
@@ -103,11 +78,6 @@ node_templates:
     relationships:
       - type: cloudify.relationships.contained_in
         target: nodejs_host
-
-  ########################################
-  # Note: only ubuntu haproxy installation
-  # is supported.
-  ########################################
 
   haproxy:
     type: nodecellar.nodes.MonitoredHAProxy
@@ -383,12 +353,6 @@ node_templates:
     relationships:
     - type: cloudify.azure.relationships.contained_in_resource_group
       target: resource_group
-
-###########################################################
-# This outputs section exposes the application endpoint.
-# You can access it by running:
-#   - cfy deployments -d <deployment_id> outputs
-###########################################################
 
 outputs:
 
