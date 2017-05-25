@@ -13,28 +13,28 @@ node_types:
       retry_after:
         default: { get_input: retry_after }
       os_family:
-        default: { get_input: vm_os_family }
+        default: linux
       azure_config:
         default: {}
       resource_config:
         default:
           hardwareProfile:
-            vmSize: { get_input: vm_size }
+            vmSize: { get_input: size }
           storageProfile:
-            imageReference:
-              publisher: { get_input: vm_image_publisher }
-              offer: { get_input: vm_image_offer }
-              sku: { get_input: vm_image_sku }
-              version: { get_input: vm_image_version }
+            imageReference: { get_input: image}
           osProfile:
-            adminUsername: { get_input: vm_os_username }
-            adminPassword: { get_input: vm_os_password }
+            adminUsername: { get_input: agent_user }
+            adminPassword: ''
             linuxConfiguration:
               ssh:
-                publicKeys: { get_input: vm_os_pubkeys }
-              disablePasswordAuthentication: { get_input: vm_os_pubkey_auth_only }
+                publicKeys: { get_input: ssh_public_keys }
+              disablePasswordAuthentication: true
       agent_config:
-        default: { get_input: agent_config }
+        default:
+          user: { get_input: agent_user }
+          install_method: remote
+          port: 22
+          key: { get_secret: agent_key_private }
     interfaces:
 
       ###########################################################
