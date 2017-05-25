@@ -14,14 +14,6 @@ imports:
   - types/cloud_config/cloud-config.yaml
   - types/scale/scale.yaml
 
-#####################################################################################
-# inputs section allows the user to use same
-# blueprint for creating different deployments, each one
-# with its own parameters.
-# to specify deployment inputs run:
-#   - cfy deployments create -b <blueprint_id> -d <deployment_id> -i inputs.json
-#####################################################################################
-
 inputs:
 
   image:
@@ -62,25 +54,10 @@ node_templates:
   nodecellar:
     type: nodecellar.nodes.NodecellarApplicationModule
     relationships:
-
-      ################################
-      # Setting the mongo connection
-      ################################
-
       - type: node_connected_to_mongo
         target: mongod
-
-      ################################
-      # Setting the nodejs connection
-      ################################
-
       - type: node_contained_in_nodejs
         target: nodejs
-
-      ################################
-      # Setting the haproxy connection
-      ################################
-
       - type: app_connected_to_haproxy
         target: haproxy
 
@@ -95,11 +72,6 @@ node_templates:
     relationships:
       - type: cloudify.relationships.contained_in
         target: nodejs_host
-
-  ########################################
-  # Note: only ubuntu haproxy installation
-  # is supported.
-  ########################################
 
   haproxy:
     type: nodecellar.nodes.MonitoredHAProxy
@@ -120,12 +92,6 @@ node_templates:
 
   nodejs_host:
     type: nodecellar.nodes.MonitoredServer
-
-    ###########################################################
-    # Setting the nodejs_host initial number of instances to 2.
-    # The default values for instances.deploy is 1.
-    ###########################################################
-
     instances:
       deploy: 1
     properties:
@@ -181,15 +147,6 @@ node_templates:
       - type: cloudify.openstack.port_connected_to_floating_ip
         target: nodecellar_ip
 
-  ###########################################################
-  # A security group to enable access to the mongo host
-  # using the port of the mongo node.
-  #
-  # We need this so that the nodecellar application can
-  # comminicate with MongoDB, since they are running on
-  # different hosts.
-  ###########################################################
-
   mongod_security_group:
     type: cloudify.openstack.nodes.SecurityGroup
     properties:
@@ -204,13 +161,6 @@ node_templates:
         - remote_ip_prefix: 0.0.0.0/0
           port: 28017
 
-  ###########################################################
-  # A security group to enable access to the nodejs host
-  # using the port of the nodecellar application.
-  #
-  # This security group will be attached to the nodejs_host
-  ###########################################################
-
   nodecellar_security_group:
     type: cloudify.openstack.nodes.SecurityGroup
     properties:
@@ -222,15 +172,6 @@ node_templates:
           port: 22
         - remote_ip_prefix: 0.0.0.0/0
           port: { get_property: [ nodecellar, port ] }
-
-  ###########################################################
-  # A security group to enable access to the haproxy frontend
-  # host using the haproxy frontend_port property.
-  # In addition, we open the statistics port (9000) of haproxy
-  #
-  # This security group will be attached to the
-  # haproxy_frontend_host
-  ###########################################################
 
   haproxy_frontend_security_group:
     type: cloudify.openstack.nodes.SecurityGroup
@@ -245,12 +186,6 @@ node_templates:
           port: { get_property: [ haproxy, frontend_port ] }
         - remote_ip_prefix: 0.0.0.0/0
           port: { get_property: [ haproxy, statistics_port ]}
-
-  ###########################################################
-  # An ip to be attached to the haproxy frontend host, since
-  # eventually we want to be able to access it
-  # from any machine, on any network.
-  ###########################################################
 
   nodecellar_ip:
     type: cloudify.openstack.nodes.FloatingIP
@@ -314,12 +249,6 @@ node_templates:
     relationships:
       - type: cloudify.relationships.depends_on
         target: cloudify_host_cloud_config
-
-###########################################################
-# This outputs section exposes the application endpoint.
-# You can access it by running:
-#   - cfy deployments -d <deployment_id> outputs
-###########################################################
 
 outputs:
 
