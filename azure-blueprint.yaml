@@ -391,11 +391,17 @@ node_templates:
 ###########################################################
 
 outputs:
+
   endpoint:
     description: Web application endpoint
     value:
-      ip_address: { get_attribute: [ haproxy_frontend_host, public_ip ] }
-      port: { get_property: [ haproxy, frontend_port ] }
+      concat:
+      - 'http://'
+      - { get_attribute: [ haproxy_frontend_host, public_ip ] }
+      - ':'
+      - { get_property: [ haproxy, frontend_port ] }
+      - '/'
+
 
 groups:
 

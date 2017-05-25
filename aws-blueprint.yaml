@@ -325,11 +325,16 @@ node_templates:
 ###########################################################
 
 outputs:
+
   endpoint:
     description: Web application endpoint
     value:
-      ip_address: { get_attribute: [ nodecellar_ip, aws_resource_id ] }
-      port: { get_property: [ haproxy, frontend_port ] }
+      concat:
+      - 'http://'
+      - { get_attribute: [ nodecellar_ip, aws_resource_id ] }
+      - ':'
+      - { get_property: [haproxy, frontend_port] }
+      - '/'
 
 groups:
 

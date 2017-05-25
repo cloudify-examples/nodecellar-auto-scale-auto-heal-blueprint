@@ -341,6 +341,7 @@ outputs:
       - { get_attribute: [ nodecellar_ip, floating_ip_address ] }
       - ':'
       - { get_property: [haproxy, frontend_port] }
+      - '/'
 
 groups:
 
