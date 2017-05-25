@@ -6,7 +6,7 @@ This blueprint deploys a demo wine store application that is based on nodejs and
 
 You will need a *Cloudify Manager* running in either AWS, Azure, or Openstack.
 
-We recommend using this [sample environment](https://github.com/cloudify-examples/cloudify-environment-setup). All examples are tested with an environment created by that blueprint. Also, installing that blueprint and following all of the configuration instructions will ensure you have all of the prerequisites, including plugins and secrets.
+If you have not already, set up the [example Cloudify environment](https://github.com/cloudify-examples/cloudify-environment-setup). Installing that blueprint and following all of the configuration instructions will ensure you have all of the prerequisites, including keys, plugins, and secrets.
 
 
 ### Step 1: Install the demo application
@@ -14,6 +14,7 @@ We recommend using this [sample environment](https://github.com/cloudify-example
 In this step, you will run a *Cloudify CLI* command, which uploads the demo application blueprint to the manager, creates a deployment, and starts an install workflow.
 
 When it is finished, you will be able to play with the wine store application.
+
 
 #### For AWS run:
 
@@ -42,6 +43,29 @@ $ cfy install \
     https://github.com/cloudify-examples/nodecellar-auto-scale-auto-heal-blueprint/archive/4.0.1.zip \
     -b demo \
     -n openstack-blueprint.yaml
+```
+
+
+You should see something like this when you execute the command:
+
+```shell
+$ cfy install \
+>     https://github.com/cloudify-examples/nodecellar-auto-scale-auto-heal-blueprint/archive/4.0.1.zip \
+>     -b demo \
+>     -n aws-blueprint.yaml
+Downloading https://github.com/cloudify-examples/nodecellar-auto-scale-auto-heal-blueprint/archive/4.0.1.zip to ...
+Uploading blueprint /.../nodecellar-auto-scale-auto-heal-blueprint-4.0.1/aws-blueprint.yaml...
+ aws-blueprint.yaml |##################################################| 100.0%
+Blueprint uploaded. The blueprint's id is demo
+Creating new deployment from blueprint demo...
+Deployment created. The deployment's id is demo
+Executing workflow install on deployment demo [timeout=900 seconds]
+Deployment environment creation is in progress...
+2017-05-01 00:00:00.000  CFY <demo> Starting 'install' workflow execution
+...
+...
+...
+2017-05-01 00:05:00.000  CFY <demo> 'install' workflow execution succeeded
 ```
 
 

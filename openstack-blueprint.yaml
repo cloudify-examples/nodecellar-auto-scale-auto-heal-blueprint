@@ -11,6 +11,7 @@ imports:
   - types/nodecellar.yaml
   - types/openstack-types.yaml
   - types/haproxy/haproxy.yaml
+  - types/cloud_config/cloud-config.yaml
   - types/scale/scale.yaml
 
 #####################################################################################
@@ -46,15 +47,6 @@ dsl_definitions:
     auth_url: { get_secret: keystone_url }
     region: { get_secret: region }
 
-node_types:
-
-  cloudify.nodes.CloudConfig:
-    derived_from: cloudify.nodes.Root
-    properties:
-      resource_config:
-        default:
-          encode_base64: false
-
 node_templates:
 
   cloudify_host_cloud_config:
@@ -62,8 +54,6 @@ node_templates:
     interfaces:
       cloudify.interfaces.lifecycle:
         create:
-          implementation: scripts/cloud_config/create.py
-          executor: central_deployment_agent
           inputs:
             cloud_config:
               ssh_authorized_keys:
