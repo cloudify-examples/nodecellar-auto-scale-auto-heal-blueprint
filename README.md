@@ -11,13 +11,38 @@ We recommend using this [sample environment](https://github.com/cloudify-example
 
 ### Step 1: Install the demo application
 
-To install the demo application, execute this *Cloudify CLI* command, replacing the `[blueprint-filename]` with either `aws-blueprint.yaml`, `azure-blueprint.yaml`, or `openstack-blueprint.yaml`.
+In this step, you will run a *Cloudify CLI* command, which uploads the demo application blueprint to the manager, creates a deployment, and starts an install workflow.
+
+When it is finished, you will be able to play with the wine store application.
+
+#### For AWS run:
 
 ```shell
-$ cfy install https://github.com/cloudify-examples/nodecellar-auto-scale-auto-heal-blueprint/archive/4.0.1.zip -b demo -n [blueprint-filename].
+$ cfy install \
+    https://github.com/cloudify-examples/nodecellar-auto-scale-auto-heal-blueprint/archive/4.0.1.zip \
+    -b demo \
+    -n aws-blueprint.yaml
 ```
 
-This command uploads the demo application blueprint to the manager, creates a deployment, and executes an install workflow. When it is finished, you will be able to play with the wine store application.
+
+#### For Azure run:
+
+```shell
+$ cfy install \
+    https://github.com/cloudify-examples/nodecellar-auto-scale-auto-heal-blueprint/archive/4.0.1.zip \
+    -b demo \
+    -n azure-blueprint.yaml
+```
+
+
+#### For Openstack run:
+
+```shell
+$ cfy install \
+    https://github.com/cloudify-examples/nodecellar-auto-scale-auto-heal-blueprint/archive/4.0.1.zip \
+    -b demo \
+    -n openstack-blueprint.yaml
+```
 
 
 ### Step 2: Verify the demo installed and started.
@@ -25,7 +50,7 @@ This command uploads the demo application blueprint to the manager, creates a de
 Once the workflow execution is complete, we can view the application endpoint by running: <br>
 
 ```shell
-cfy deployments outputs demo
+$ cfy deployments outputs demo
 ```
 
 You should see an output like this:
@@ -34,7 +59,7 @@ You should see an output like this:
 Retrieving outputs for deployment demo...
  - "endpoint":
      Description: Web application endpoint
-     Value: http://10.239.0.18:8080
+     Value: http://10.239.0.18:8080/
 ```
 
 Use the URL from the endpoint output and visit that URL in a browser. Play with the wine store application.
