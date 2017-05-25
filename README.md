@@ -101,7 +101,7 @@ This will increase the number of requests to the application. As a result the CP
 
 Killing this command should cause the CPU to drop below the scale down threshold, and the application will scale down.
 
-_Note: this assumes that the VM is an appropriate flavor for the benchmarking tool to sufficiently challenge the VM._
+_Note: this assumes that the VM is an appropriate flavor for the benchmarking tool to sufficiently challenge the VM. This particular configuration is with a t2.micro AWS instance._
 
 
 ### Step 3: Simulate auto-healing
