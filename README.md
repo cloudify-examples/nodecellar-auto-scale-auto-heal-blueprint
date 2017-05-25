@@ -1,3 +1,5 @@
+[![CircleCI](https://circleci.com/gh/cloudify-examples/nodecellar-auto-scale-auto-heal-blueprint.svg?style=svg)](https://circleci.com/gh/cloudify-examples/nodecellar-auto-scale-auto-heal-blueprint)
+
 # Nodecellar Auto-scale Auto-heal Blueprint
 
 This blueprint deploys a demo wine store application that is based on nodejs and mongodb using Cloudify.
