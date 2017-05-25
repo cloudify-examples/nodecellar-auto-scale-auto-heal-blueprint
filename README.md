@@ -103,6 +103,23 @@ Killing this command should cause the CPU to drop below the scale down threshold
 
 _Note: this assumes that the VM is an appropriate flavor for the benchmarking tool to sufficiently challenge the VM. This particular configuration is with a t2.micro AWS instance._
 
+There are a number of ways to verify the scaling. If you have Cloudify Premium,  you will see the executions in Cloudify's UI.
+You can also execute `cfy executions list` for a CLI view:
+
+```shell
+$ cfy executions list
+Listing all executions...
+
+Executions:
++--------------------------------------+-------------------------------+------------+---------------+--------------------------+-------+------------+----------------+------------+
+|                  id                  |          workflow_id          |   status   | deployment_id |        created_at        | error | permission |  tenant_name   | created_by |
++--------------------------------------+-------------------------------+------------+---------------+--------------------------+-------+------------+----------------+------------+
+| 10e5a704-6c97-43f0-bf84-cb3c3b5cf9e5 | create_deployment_environment | terminated |      demo     | 2017-05-01 00:00:00.000  |       |  creator   | default_tenant |   admin    |
+| a1dcbc8f-ae02-4fc7-80a6-1201a706b72b |            install            | terminated |      demo     | 2017-05-01 00:00:00.000  |       |  creator   | default_tenant |   admin    |
+| 53d9c07e-7340-4860-91c5-d402877be341 |             scale             | terminated |      demo     | 2017-05-01 00:05:00.000  |       |  creator   | default_tenant |   admin    |
+| 2dd15f7b-78ed-46db-9084-de8d0345ff3e |             scale             |  started   |      demo     | 2017-05-01 00:10:00.000  |       |  creator   | default_tenant |   admin    |
++--------------------------------------+-------------------------------+------------+---------------+--------------------------+-------+------------+----------------+------------+
+```
 
 ### Step 3: Simulate auto-healing
 
