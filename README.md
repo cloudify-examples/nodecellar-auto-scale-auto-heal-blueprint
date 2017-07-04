@@ -10,6 +10,9 @@ You will need a *Cloudify Manager* running in either AWS, Azure, or Openstack.
 
 If you have not already, set up the [example Cloudify environment](https://github.com/cloudify-examples/cloudify-environment-setup). Installing that blueprint and following all of the configuration instructions will ensure you have all of the prerequisites, including keys, plugins, and secrets.
 
+You will also need these two plugins uploaded to your manager:
+ - [AWS plugin 1.4.9](https://github.com/cloudify-cosmo/cloudify-aws-plugin/releases/tag/1.4.9)
+ - [Diamond plugin 1.3.5](https://github.com/cloudify-cosmo/cloudify-diamond-plugin/releases/tag/1.3.5)
 
 ### Step 1: Install the demo application
 
