@@ -114,11 +114,10 @@ node_templates:
       - type: cloudify.relationships.depends_on
         target: subnetwork
 
-  mongod_firewall_rule:
+  mongod_fw:
     type: cloudify.gcp.nodes.FirewallRule
     properties:
       gcp_config: *gcp_config
-      name: mongod_fw
       allowed:
         tcp:
           - 28017
@@ -130,11 +129,10 @@ node_templates:
         - { get_input: mongod_tag }
 
 
-  nodecellar_firewall_rule:
+  nodecellar_fw:
     type: cloudify.gcp.nodes.FirewallRule
     properties:
       gcp_config: *gcp_config
-      name: nodecellar_fw
       allowed:
         tcp:
           - { get_property: [ nodecellar, port ] }
@@ -144,11 +142,10 @@ node_templates:
       target_tags:
         - { get_input: nodecellar_tag }
 
-  haproxy_frontend_firewall_rule:
+  haproxy_frontend_fw:
     type: cloudify.gcp.nodes.FirewallRule
     properties:
       gcp_config: *gcp_config
-      name: haproxy_frontend_fw
       allowed:
         tcp:
           - { get_property: [ haproxy, statistics_port ]}
