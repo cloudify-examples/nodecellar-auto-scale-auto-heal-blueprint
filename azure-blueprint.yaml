@@ -4,9 +4,9 @@ description: >
   This Blueprint installs the nodecellar application on an Azure Cloud environment.
 
 imports:
-  - http://www.getcloudify.org/spec/cloudify/4.0/types.yaml
+  - https://raw.githubusercontent.com/cloudify-cosmo/cloudify-manager/4.1/resources/rest-service/cloudify/types/types.yaml
+  - https://raw.githubusercontent.com/cloudify-cosmo/cloudify-diamond-plugin/1.3.5/plugin.yaml
   - https://raw.githubusercontent.com/cloudify-cosmo/cloudify-azure-plugin/1.4.3/plugin.yaml
-  - http://www.getcloudify.org/spec/diamond-plugin/1.3.3/plugin.yaml
   - types/nodecellar.yaml
   - types/azure-types.yaml
   - types/haproxy/haproxy.yaml
