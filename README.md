@@ -21,7 +21,7 @@ When it is finished, you will be able to play with the wine store application.
 
 ```shell
 $ cfy install \
-    https://github.com/cloudify-examples/nodecellar-auto-scale-auto-heal-blueprint/archive/4.0.1.zip \
+    https://github.com/cloudify-examples/nodecellar-auto-scale-auto-heal-blueprint/archive/4.1.zip \
     -b demo \
     -n aws-blueprint.yaml
 ```
@@ -31,7 +31,7 @@ $ cfy install \
 
 ```shell
 $ cfy install \
-    https://github.com/cloudify-examples/nodecellar-auto-scale-auto-heal-blueprint/archive/4.0.1.zip \
+    https://github.com/cloudify-examples/nodecellar-auto-scale-auto-heal-blueprint/archive/4.1.zip \
     -b demo \
     -n azure-blueprint.yaml
 ```
@@ -41,7 +41,7 @@ $ cfy install \
 
 ```shell
 $ cfy install \
-    https://github.com/cloudify-examples/nodecellar-auto-scale-auto-heal-blueprint/archive/4.0.1.zip \
+    https://github.com/cloudify-examples/nodecellar-auto-scale-auto-heal-blueprint/archive/4.1.zip \
     -b demo \
     -n openstack-blueprint.yaml
 ```
@@ -51,10 +51,10 @@ You should see something like this when you execute the command:
 
 ```shell
 $ cfy install \
->     https://github.com/cloudify-examples/nodecellar-auto-scale-auto-heal-blueprint/archive/4.0.1.zip \
+>     https://github.com/cloudify-examples/nodecellar-auto-scale-auto-heal-blueprint/archive/4.1.zip \
 >     -b demo \
 >     -n aws-blueprint.yaml
-Downloading https://github.com/cloudify-examples/nodecellar-auto-scale-auto-heal-blueprint/archive/4.0.1.zip to ...
+Downloading https://github.com/cloudify-examples/nodecellar-auto-scale-auto-heal-blueprint/archive/4.1.zip to ...
 Uploading blueprint /.../nodecellar-auto-scale-auto-heal-blueprint-4.0.1/aws-blueprint.yaml...
  aws-blueprint.yaml |##################################################| 100.0%
 Blueprint uploaded. The blueprint's id is demo
