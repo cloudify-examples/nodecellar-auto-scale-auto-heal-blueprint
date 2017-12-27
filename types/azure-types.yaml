@@ -9,7 +9,7 @@ node_types:
     derived_from: cloudify.azure.nodes.compute.VirtualMachine
     properties:
       location:
-        default: { get_secret: location }
+        default: { get_input: location }
       retry_after:
         default: { get_input: retry_after }
       os_family:
@@ -34,7 +34,7 @@ node_types:
           user: { get_input: agent_user }
           install_method: remote
           port: 22
-          key: { get_secret: agent_key_private }
+          key: { get_input: agent_key_private }
     interfaces:
 
       ###########################################################

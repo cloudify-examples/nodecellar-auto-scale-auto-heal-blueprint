@@ -5,9 +5,11 @@ description: >
   an haproxy instance on an openstack cloud environment.
 
 imports:
-  - https://raw.githubusercontent.com/cloudify-cosmo/cloudify-manager/4.2/resources/rest-service/cloudify/types/types.yaml
-  - http://www.getcloudify.org/spec/gcp-plugin/1.2.0/plugin.yaml
+  - http://www.getcloudify.org/spec/cloudify/4.2/types.yaml
+  - http://www.getcloudify.org/spec/utilities-plugin/1.4.2.1/plugin.yaml
+  - http://www.getcloudify.org/spec/fabric-plugin/1.5/plugin.yaml
   - http://www.getcloudify.org/spec/diamond-plugin/1.3.5/plugin.yaml
+  - http://www.getcloudify.org/spec/gcp-plugin/1.3.0.1/plugin.yaml
   - types/nodecellar.yaml
   - types/gcp-types.yaml
   - types/haproxy/haproxy.yaml
@@ -46,6 +48,22 @@ inputs:
   region:
     type: string
     default: { get_secret: region }
+
+  network_name:
+    type: string
+    default: { get_secret: management_network_name }
+
+  subnetwork_name:
+    type: string
+    default: { get_secret: management_subnetwork_name }
+
+  agent_key_public:
+    type: string
+    default: { get_secret: agent_key_public }
+
+  agent_key_private:
+    type: string
+    default: { get_secret: agent_key_private }
 
   image:
     description: >
@@ -210,8 +228,8 @@ node_templates:
     type: cloudify.gcp.nodes.SubNetwork
     properties:
       use_external_resource: true
-      name: { get_secret: management_subnetwork_name }
-      region: { get_secret: region }
+      name: { get_input: subnetwork_name }
+      region: { get_input: region }
       gcp_config: *gcp_config
     relationships:
       - type: cloudify.gcp.relationships.contained_in_network
@@ -221,7 +239,7 @@ node_templates:
     type: cloudify.gcp.nodes.Network
     properties:
       use_external_resource: true
-      name: { get_secret: management_network_name }
+      name: { get_input: network_name }
       gcp_config: *gcp_config
 
 outputs:

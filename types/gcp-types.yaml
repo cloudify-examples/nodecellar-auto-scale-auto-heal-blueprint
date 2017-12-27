@@ -14,7 +14,7 @@ node_types:
           install_method: remote
           user: { get_input: agent_user }
           port: 22
-          key: { get_secret: agent_key_private }
+          key: { get_input: agent_key_private }
       image_id:
         default: { get_input: image }
       instance_type:
@@ -33,7 +33,7 @@ node_types:
               default: { get_input: agent_user }
             ssh_keys:
               default:
-              - { get_secret: agent_key_public }
+              - { get_input: agent_key_public }
 
       ###########################################################
       # We are infact telling cloudify to install a diamond
