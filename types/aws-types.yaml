@@ -17,7 +17,7 @@ node_types:
           install_method: remote
           user: { get_input: agent_user }
           port: 22
-          key: { get_secret: agent_key_private }
+          key: { get_input: agent_key_private }
     interfaces:
       cloudify.interfaces.lifecycle:
         create:
@@ -28,7 +28,7 @@ node_types:
                 block_device_map:
                   '/dev/sda1':
                     delete_on_termination: true
-                placement: { get_secret: availability_zone }
+                placement: { get_input: availability_zone }
                 user_data: { get_attribute: [ cloudify_host_cloud_config, cloud_config ] }
 
       ###########################################################
