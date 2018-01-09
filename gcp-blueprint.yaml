@@ -278,7 +278,7 @@ groups:
               workflow: scale
               workflow_parameters:
                 delta: 1
-                node_id: nodecellar
+                scalable_entity_name: nodecellar
                 scale_compute: true
 
   scale_down_group:
@@ -299,7 +299,7 @@ groups:
               workflow: scale
               workflow_parameters:
                 delta: -1
-                node_id: nodecellar
+                scalable_entity_name: nodecellar
                 scale_compute: true
 
   heal_group:
