@@ -6,9 +6,9 @@ description: >
 imports:
   - http://www.getcloudify.org/spec/cloudify/4.2/types.yaml
   - http://www.getcloudify.org/spec/utilities-plugin/1.4.5/plugin.yaml
-  - http://www.getcloudify.org/spec/awssdk-plugin/1.2.0.1/plugin.yaml
+  - http://www.getcloudify.org/spec/awssdk-plugin/1.2.0.3/plugin.yaml
   - https://github.com/cloudify-cosmo/cloudify-aws-plugin/releases/download/1.5.1.2/plugin.yaml
-  - http://www.getcloudify.org/spec/diamond-plugin/1.3.5/plugin.yaml
+  - http://www.getcloudify.org/spec/diamond-plugin/1.3.6/plugin.yaml
   - types/nodecellar.yaml
   - types/aws-types.yaml
   - types/haproxy/haproxy.yaml
@@ -43,6 +43,9 @@ inputs:
 
   manager_network:
     default: external
+
+  network_deployment_name:
+    default: aws-example-network
 
 dsl_definitions:
 
@@ -106,6 +109,8 @@ node_templates:
     properties:
       aws_config: *aws_config
     relationships:
+      - type: cloudify.relationships.contained_in
+        target: scaling_node
       - type: cloudify.aws.relationships.instance_connected_to_eni
         target: nodejs_nic
       - type: cloudify.relationships.depends_on
@@ -199,11 +204,19 @@ node_templates:
           Groups:
           - { get_attribute: [ security_group, aws_resource_id ] }
     relationships:
-      - type: cloudify.relationships.depends_on
-        target: private_subnet
-      - type: cloudify.relationships.depends_on
-        target: security_group
+    - type: cloudify.relationships.contained_in
+      target: scaling_node
+    - type: cloudify.relationships.depends_on
+      target: private_subnet
+    - type: cloudify.relationships.depends_on
+      target: security_group
     interfaces: *private_subnet_interface
+
+  scaling_node:
+    type: cloudify.nodes.Root
+    relationships:
+    - type: cloudify.relationships.contained_in
+      target: aws
 
   haproxy_nic:
     type: cloudify.nodes.aws.ec2.Interface
@@ -233,11 +246,6 @@ node_templates:
       resource_config:
         kwargs:
           IpPermissions:
-          - IpProtocol: tcp
-            FromPort: 22
-            ToPort: 22
-            IpRanges:
-            - CidrIp: 0.0.0.0/0
           - IpProtocol: tcp
             FromPort: { get_property: [ mongod, port ] }
             ToPort: { get_property: [ mongod, port ] }
@@ -341,12 +349,12 @@ node_templates:
     properties:
       resource_config:
         blueprint:
-          id: aws-example-network
+          id: { get_input: network_deployment_name }
           blueprint_archive: https://github.com/cloudify-examples/aws-example-network/archive/master.zip
           main_file_name: simple-blueprint.yaml
           external_resource: external
         deployment:
-          id: aws-example-network
+          id: { get_input: network_deployment_name }
           outputs:
             vpc_id: vpc_id
             public_subnet_id: public_subnet_id
@@ -368,7 +376,6 @@ outputs:
       - ':'
       - { get_property: [haproxy, frontend_port] }
       - '/'
-
 
 groups:
 
