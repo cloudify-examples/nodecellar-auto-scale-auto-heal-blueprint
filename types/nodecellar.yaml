@@ -45,20 +45,20 @@ node_types:
         configure: scripts/mongo/install-pymongo.sh
         stop: scripts/mongo/stop-mongo.sh
 
-      ###########################################################
-      # Notice that this node defines an additional collector
-      # to collect data on the MongoDB.
-      ###########################################################
+      # ###########################################################
+      # # Notice that this node defines an additional collector
+      # # to collect data on the MongoDB.
+      # ###########################################################
 
-      cloudify.interfaces.monitoring:
-          start:
-            implementation: diamond.diamond_agent.tasks.add_collectors
-            inputs:
-              collectors_config:
-                default:
-                  MongoDBCollector:
-                    config:
-                      hosts: { concat: ['localhost:', { get_property: [ SELF, port ] } ] }
+      # cloudify.interfaces.monitoring:
+      #     start:
+      #       implementation: diamond.diamond_agent.tasks.add_collectors
+      #       inputs:
+      #         collectors_config:
+      #           default:
+      #             MongoDBCollector:
+      #               config:
+      #                 hosts: { concat: ['localhost:', { get_property: [ SELF, port ] } ] }
 
   ###########################################################
   # NodeJS Server.

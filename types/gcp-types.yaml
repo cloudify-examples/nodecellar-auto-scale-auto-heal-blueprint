@@ -11,7 +11,8 @@ node_types:
     properties:
       agent_config:
         default:
-          install_method: remote
+          network: { get_input: manager_network }
+          install_method: init_script
           user: { get_input: agent_user }
           port: 22
           key: { get_input: agent_key_private }
@@ -23,6 +24,8 @@ node_types:
         default: true # due to GCP specific that VMs without external ip cannot have direct external access and we need to download
       block_project_ssh_keys:
         default: true
+      zone:
+        default: { get_secret: gcp_zone }
     interfaces:
       cloudify.interfaces.lifecycle:
         create:

@@ -11,8 +11,9 @@ node_types:
     properties:
       agent_config:
         default:
+          network: { get_input: manager_network }
+          install_method: init_script
           user: { get_input: agent_user }
-          install_method: remote
           port: 22
           key: { get_input: agent_key_private }
       server:
@@ -20,8 +21,6 @@ node_types:
           key_name: ''
           image: { get_input: image }
           flavor: { get_input: flavor }
-      management_network_name:
-        default: { get_property: [ public_network, resource_id ] }
     interfaces:
       cloudify.interfaces.lifecycle:
         create:
