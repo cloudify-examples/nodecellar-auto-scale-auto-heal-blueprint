@@ -18,7 +18,6 @@ dependencies:
 
 test:
   override:
-    - cfy init
     - cfy blueprints validate azure.yaml
     - cfy blueprints validate aws.yaml
     - cfy blueprints validate openstack.yaml
