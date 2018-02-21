@@ -13,7 +13,6 @@ node_types:
           network: { get_input: manager_network }
           install_method: init_script
           user: { get_input: agent_user }
-          heartbeat: 10
       resource_config:
         default:
           MaxCount: 1
@@ -38,15 +37,15 @@ node_types:
       ###########################################################
 
       cloudify.interfaces.monitoring_agent:
-          install:
-            implementation: diamond.diamond_agent.tasks.install
-            inputs:
-              diamond_config:
-                default:
-                  interval: 1
-          start: diamond.diamond_agent.tasks.start
-          stop: diamond.diamond_agent.tasks.stop
-          uninstall: diamond.diamond_agent.tasks.uninstall
+        install:
+          implementation: diamond.diamond_agent.tasks.install
+          inputs:
+            diamond_config:
+              default:
+                interval: 1
+        start: diamond.diamond_agent.tasks.start
+        stop: diamond.diamond_agent.tasks.stop
+        uninstall: diamond.diamond_agent.tasks.uninstall
 
       ###########################################################
       # Adding some collectors. These collectors are necessary
@@ -54,15 +53,15 @@ node_types:
       ###########################################################
 
       cloudify.interfaces.monitoring:
-          start:
-            implementation: diamond.diamond_agent.tasks.add_collectors
-            inputs:
-              collectors_config:
-                default:
-                  CPUCollector: {}
-                  MemoryCollector: {}
-                  LoadAverageCollector: {}
-                  DiskUsageCollector:
-                    config:
-                      devices: x?vd[a-z]+[0-9]*$
-                  NetworkCollector: {}
+        start:
+          implementation: diamond.diamond_agent.tasks.add_collectors
+          inputs:
+            collectors_config:
+              default:
+                CPUCollector: {}
+                MemoryCollector: {}
+                LoadAverageCollector: {}
+                DiskUsageCollector:
+                  config:
+                    devices: x?vd[a-z]+[0-9]*$
+                NetworkCollector: {}
