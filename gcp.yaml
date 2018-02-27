@@ -4,10 +4,10 @@ description: >
   This Blueprint installs the nodecellar application behind an haproxy instance on an openstack cloud environment.
 
 imports:
-  - http://www.getcloudify.org/spec/cloudify/4.2/types.yaml
-  - http://www.getcloudify.org/spec/utilities-plugin/1.4.5/plugin.yaml
-  - http://www.getcloudify.org/spec/gcp-plugin/1.4.0/plugin.yaml
-  - http://www.getcloudify.org/spec/diamond-plugin/1.3.6/plugin.yaml
+  - http://www.getcloudify.org/spec/cloudify/4.3/types.yaml
+  - plugin:cloudify-gcp-plugin
+  - plugin:cloudify-utilities-plugin
+  - plugin:cloudify-diamond-plugin
   - types/nodecellar.yaml
   - types/gcp-types.yaml
   - types/haproxy/haproxy.yaml
