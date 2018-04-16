@@ -7,7 +7,7 @@ This blueprint deploys a demo wine store application that is based on nodejs and
 ## Compatibility
 
 Tested with:
-  * Cloudify 4.2
+  * Cloudify 4.3
 
 ## Pre-installation steps
 
