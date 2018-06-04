@@ -44,6 +44,9 @@ inputs:
   network_deployment_name:
     default: gcp-example-network
 
+  use_existing_network_deployment:
+    default: true
+
 dsl_definitions:
 
   client_config: &gcp_config
@@ -196,7 +199,7 @@ node_templates:
           id: { get_input: network_deployment_name }
           blueprint_archive: https://github.com/cloudify-examples/gcp-example-network/archive/master.zip
           main_file_name: simple-blueprint.yaml
-          external_resource: external
+          external_resource: { get_input: use_existing_network_deployment }
         deployment:
           id: { get_input: network_deployment_name }
           outputs:
@@ -204,7 +207,7 @@ node_templates:
             public_subnet: public_subnet
             region: region
             zone: zone
-          external_resource: external
+          external_resource: { get_input: use_existing_network_deployment }
         reexecute: false
 
 outputs:
