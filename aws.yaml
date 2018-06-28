@@ -299,7 +299,7 @@ node_templates:
     properties:
       client_config: *client_config
       use_external_resource: true
-      # resource_id: { get_attribute: [ aws, deployment, outputs, private_subnet_id ] }
+      resource_id: { get_attribute: [ aws, deployment, outputs, private_subnet_id ] }
       resource_config:
         kwargs:
           CidrBlock: 'N/A'
@@ -320,6 +320,7 @@ node_templates:
     properties:
       client_config: *client_config
       use_external_resource: true
+      resource_id: { get_attribute: [ aws, deployment, outputs, public_subnet_id ] }
       resource_config:
         kwargs:
           CidrBlock: 'N/A'
@@ -340,7 +341,7 @@ node_templates:
     properties:
       client_config: *client_config
       use_external_resource: true
-      # resource_id: { get_attribute: [ aws, deployment, outputs, vpc_id ] }
+      resource_id: { get_attribute: [ aws, deployment, outputs, vpc_id ] }
       resource_config:
         kwargs:
           CidrBlock: 'N/A'
