@@ -154,9 +154,9 @@ node_templates:
             Values:
             - '099720109477'
       client_config: *client_config
-    relationships:
-    - type: cloudify.relationships.contained_in
-      target: aws
+    # relationships:
+    # - type: cloudify.relationships.contained_in
+    #   target: aws
 
   cloudify_host_cloud_config:
     type: cloudify.nodes.CloudInit.CloudConfig
@@ -223,9 +223,9 @@ node_templates:
 
   scaling_node:
     type: cloudify.nodes.Root
-    relationships:
-    - type: cloudify.relationships.contained_in
-      target: aws
+    # relationships:
+    # - type: cloudify.relationships.contained_in
+    #   target: aws
 
   haproxy_nic:
     type: cloudify.nodes.aws.ec2.Interface
@@ -286,8 +286,8 @@ node_templates:
     relationships:
     - type: cloudify.relationships.depends_on
       target: vpc
-    - type: cloudify.relationships.contained_in
-      target: aws
+    # - type: cloudify.relationships.contained_in
+    #   target: aws
     interfaces:
       cloudify.interfaces.lifecycle:
         configure:
@@ -312,8 +312,8 @@ node_templates:
     relationships:
     - type: cloudify.relationships.depends_on
       target: vpc
-    - type: cloudify.relationships.contained_in
-      target: aws
+    # - type: cloudify.relationships.contained_in
+    #   target: aws
 
   public_subnet:
     type: cloudify.nodes.aws.ec2.Subnet
@@ -333,8 +333,8 @@ node_templates:
     relationships:
     - type: cloudify.relationships.depends_on
       target: vpc
-    - type: cloudify.relationships.contained_in
-      target: aws
+    # - type: cloudify.relationships.contained_in
+    #   target: aws
 
   vpc:
     type: cloudify.nodes.aws.ec2.Vpc
@@ -350,9 +350,9 @@ node_templates:
         create:
           inputs:
             aws_resource_id: { get_secret: vpc_id }
-    relationships:
-    - type: cloudify.relationships.contained_in
-      target: aws
+    # relationships:
+    # - type: cloudify.relationships.contained_in
+    #   target: aws
 
   # aws:
   #   type: cloudify.nodes.DeploymentProxy
