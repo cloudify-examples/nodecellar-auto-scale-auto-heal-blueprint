@@ -308,7 +308,7 @@ node_templates:
       cloudify.interfaces.lifecycle:
         create:
           inputs:
-            aws_resource_id: { get_secret: private_subnet_id ] }
+            aws_resource_id: { get_secret: private_subnet_id }
     relationships:
     - type: cloudify.relationships.depends_on
       target: vpc
