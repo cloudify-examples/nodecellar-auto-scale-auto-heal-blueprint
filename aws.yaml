@@ -4,9 +4,9 @@ description: >
   This Blueprint installs the nodecellar application on an AWS cloud environment.
 
 imports:
-  - http://www.getcloudify.org/spec/cloudify/4.3/types.yaml
+  - http://www.getcloudify.org/spec/cloudify/4.3.2/types.yaml
   - plugin:cloudify-awssdk-plugin
-  - plugin:cloudify-utilities-plugin
+  - http://www.getcloudify.org/spec/utilities-plugin/1.4.5/plugin.yaml
   - plugin:cloudify-diamond-plugin
   - types/nodecellar.yaml
   - types/aws-types.yaml
