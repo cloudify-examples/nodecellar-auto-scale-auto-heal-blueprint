@@ -4,9 +4,9 @@ description: >
   This Blueprint installs the nodecellar application on an AWS cloud environment.
 
 imports:
-  - http://www.getcloudify.org/spec/cloudify/4.3/types.yaml
+  - http://www.getcloudify.org/spec/cloudify/4.3.2/types.yaml
   - plugin:cloudify-awssdk-plugin
-  - plugin:cloudify-utilities-plugin
+  - http://www.getcloudify.org/spec/utilities-plugin/1.7.1/plugin.yaml
   - plugin:cloudify-diamond-plugin
   - types/nodecellar.yaml
   - types/aws-types.yaml
@@ -54,13 +54,13 @@ dsl_definitions:
   aws_config: &aws_config
     aws_access_key_id: { get_secret: aws_access_key_id }
     aws_secret_access_key: { get_secret: aws_secret_access_key }
-    ec2_region_name: { get_attribute: [ aws, deployment, outputs, ec2_region_name ] }
-    ec2_region_endpoint: { get_attribute: [ aws, deployment, outputs, ec2_region_endpoint ] }
+    ec2_region_name: { get_secret: ec2_region_name }
+    ec2_region_endpoint: { get_secret: ec2_region_endpoint }
 
   client_config: &client_config
     aws_access_key_id: { get_secret: aws_access_key_id }
     aws_secret_access_key: { get_secret: aws_secret_access_key }
-    region_name: { get_attribute: [ aws, deployment, outputs, ec2_region_name ] }
+    region_name: { get_secret: ec2_region_name }
 
 node_templates:
 
@@ -154,9 +154,9 @@ node_templates:
             Values:
             - '099720109477'
       client_config: *client_config
-    relationships:
-    - type: cloudify.relationships.contained_in
-      target: aws
+    # relationships:
+    # - type: cloudify.relationships.contained_in
+    #   target: aws
 
   cloudify_host_cloud_config:
     type: cloudify.nodes.CloudInit.CloudConfig
@@ -223,9 +223,9 @@ node_templates:
 
   scaling_node:
     type: cloudify.nodes.Root
-    relationships:
-    - type: cloudify.relationships.contained_in
-      target: aws
+    # relationships:
+    # - type: cloudify.relationships.contained_in
+    #   target: aws
 
   haproxy_nic:
     type: cloudify.nodes.aws.ec2.Interface
@@ -286,8 +286,8 @@ node_templates:
     relationships:
     - type: cloudify.relationships.depends_on
       target: vpc
-    - type: cloudify.relationships.contained_in
-      target: aws
+    # - type: cloudify.relationships.contained_in
+    #   target: aws
     interfaces:
       cloudify.interfaces.lifecycle:
         configure:
@@ -299,7 +299,7 @@ node_templates:
     properties:
       client_config: *client_config
       use_external_resource: true
-      resource_id: { get_attribute: [ aws, deployment, outputs, private_subnet_id ] }
+      resource_id: { get_secret: private_subnet_id }
       resource_config:
         kwargs:
           CidrBlock: 'N/A'
@@ -308,19 +308,19 @@ node_templates:
       cloudify.interfaces.lifecycle:
         create:
           inputs:
-            aws_resource_id: { get_attribute: [ aws, deployment, outputs, private_subnet_id ] }
+            aws_resource_id: { get_secret: private_subnet_id }
     relationships:
     - type: cloudify.relationships.depends_on
       target: vpc
-    - type: cloudify.relationships.contained_in
-      target: aws
+    # - type: cloudify.relationships.contained_in
+    #   target: aws
 
   public_subnet:
     type: cloudify.nodes.aws.ec2.Subnet
     properties:
       client_config: *client_config
       use_external_resource: true
-      resource_id: { get_attribute: [ aws, deployment, outputs, public_subnet_id ] }
+      resource_id: { get_secret: public_subnet_id }
       resource_config:
         kwargs:
           CidrBlock: 'N/A'
@@ -329,19 +329,19 @@ node_templates:
       cloudify.interfaces.lifecycle:
         create:
           inputs:
-            aws_resource_id: { get_attribute: [ aws, deployment, outputs, public_subnet_id ] }
+            aws_resource_id: { get_secret: public_subnet_id }
     relationships:
     - type: cloudify.relationships.depends_on
       target: vpc
-    - type: cloudify.relationships.contained_in
-      target: aws
+    # - type: cloudify.relationships.contained_in
+    #   target: aws
 
   vpc:
     type: cloudify.nodes.aws.ec2.Vpc
     properties:
       client_config: *client_config
       use_external_resource: true
-      resource_id: { get_attribute: [ aws, deployment, outputs, vpc_id ] }
+      resource_id: { get_secret: vpc_id }
       resource_config:
         kwargs:
           CidrBlock: 'N/A'
@@ -349,31 +349,31 @@ node_templates:
       cloudify.interfaces.lifecycle:
         create:
           inputs:
-            aws_resource_id: { get_attribute: [ aws, deployment, outputs, vpc_id ] }
-    relationships:
-    - type: cloudify.relationships.contained_in
-      target: aws
+            aws_resource_id: { get_secret: vpc_id }
+    # relationships:
+    # - type: cloudify.relationships.contained_in
+    #   target: aws
 
-  aws:
-    type: cloudify.nodes.DeploymentProxy
-    properties:
-      resource_config:
-        blueprint:
-          id: { get_input: network_deployment_name }
-          blueprint_archive: https://github.com/cloudify-examples/aws-example-network/archive/master.zip
-          main_file_name: simple-blueprint.yaml
-          external_resource: { get_input: use_existing_network_deployment }
-        deployment:
-          id: { get_input: network_deployment_name }
-          outputs:
-            vpc_id: vpc_id
-            public_subnet_id: public_subnet_id
-            private_subnet_id: private_subnet_id
-            ec2_region_name: ec2_region_name
-            ec2_region_endpoint: ec2_region_endpoint
-            availability_zone: availability_zone
-          external_resource: { get_input: use_existing_network_deployment }
-        reexecute: false
+  # aws:
+  #   type: cloudify.nodes.DeploymentProxy
+  #   properties:
+  #     resource_config:
+  #       blueprint:
+  #         id: { get_input: network_deployment_name }
+  #         blueprint_archive: https://github.com/cloudify-examples/aws-example-network/archive/master.zip
+  #         main_file_name: simple-blueprint.yaml
+  #         external_resource: { get_input: use_existing_network_deployment }
+  #       deployment:
+  #         id: { get_input: network_deployment_name }
+  #         outputs:
+  #           vpc_id: vpc_id
+  #           public_subnet_id: public_subnet_id
+  #           private_subnet_id: private_subnet_id
+  #           ec2_region_name: ec2_region_name
+  #           ec2_region_endpoint: ec2_region_endpoint
+  #           availability_zone: availability_zone
+  #         external_resource: { get_input: use_existing_network_deployment }
+  #       reexecute: false
 
 outputs:
 

@@ -25,7 +25,7 @@ node_types:
               Ebs:
                 DeleteOnTermination: True
             Placement:
-              AvailabilityZone: { get_attribute: [ aws, deployment, outputs, availability_zone ] }
+              AvailabilityZone: { get_secret: availability_zone }
             UserData: { get_attribute: [ cloudify_host_cloud_config, cloud_config ] }
     interfaces:
 
