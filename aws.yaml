@@ -174,8 +174,7 @@ node_templates:
     type: cloudify.nodes.aws.ec2.ElasticIP
     properties:
       resource_config:
-        kwargs:
-          Domain: 'vpc'
+        Domain: 'vpc'
       client_config: *client_config
     relationships:
       - type: cloudify.relationships.depends_on
@@ -196,11 +195,6 @@ node_templates:
         target: private_subnet
       - type: cloudify.relationships.depends_on
         target: security_group
-    interfaces: &private_subnet_interface
-      cloudify.interfaces.lifecycle:
-        configure:
-          inputs:
-            resource_config: { get_property: [ SELF, resource_config, kwargs] }
 
   nodejs_nic:
     type: cloudify.nodes.aws.ec2.Interface
@@ -219,7 +213,6 @@ node_templates:
       target: private_subnet
     - type: cloudify.relationships.depends_on
       target: security_group
-    interfaces: *private_subnet_interface
 
   scaling_node:
     type: cloudify.nodes.Root
@@ -242,34 +235,28 @@ node_templates:
         target: public_subnet
       - type: cloudify.relationships.depends_on
         target: security_group
-    interfaces:
-      cloudify.interfaces.lifecycle:
-        configure:
-          inputs:
-            resource_config: { get_property: [ SELF, resource_config, kwargs] }
 
   security_group_rules:
     type: cloudify.nodes.aws.ec2.SecurityGroupRuleIngress
     properties:
       client_config: *client_config
       resource_config:
-        kwargs:
-          IpPermissions:
-          - IpProtocol: tcp
-            FromPort: { get_property: [ mongod, port ] }
-            ToPort: { get_property: [ mongod, port ] }
-            IpRanges:
-            - CidrIp: 0.0.0.0/0
-          - IpProtocol: tcp
-            FromPort: { get_property: [ nodecellar, port ] }
-            ToPort: { get_property: [ nodecellar, port ] }
-            IpRanges:
-            - CidrIp: 0.0.0.0/0
-          - IpProtocol: tcp
-            FromPort: { get_property: [ haproxy, statistics_port ]}
-            ToPort: { get_property: [ haproxy, statistics_port ]}
-            IpRanges:
-            - CidrIp: 0.0.0.0/0
+        IpPermissions:
+        - IpProtocol: tcp
+          FromPort: { get_property: [ mongod, port ] }
+          ToPort: { get_property: [ mongod, port ] }
+          IpRanges:
+          - CidrIp: 0.0.0.0/0
+        - IpProtocol: tcp
+          FromPort: { get_property: [ nodecellar, port ] }
+          ToPort: { get_property: [ nodecellar, port ] }
+          IpRanges:
+          - CidrIp: 0.0.0.0/0
+        - IpProtocol: tcp
+          FromPort: { get_property: [ haproxy, statistics_port ]}
+          ToPort: { get_property: [ haproxy, statistics_port ]}
+          IpRanges:
+          - CidrIp: 0.0.0.0/0
     relationships:
     - type: cloudify.relationships.contained_in
       target: security_group
@@ -278,21 +265,15 @@ node_templates:
     type: cloudify.nodes.aws.ec2.SecurityGroup
     properties:
       resource_config:
-        kwargs:
-          GroupName: NodecellarExampleSecurityGroup
-          Description: Created by nodecellar-blueprint aws-blueprint.yaml.
-          VpcId: { get_attribute: [ vpc, aws_resource_id] }
+        GroupName: NodecellarExampleSecurityGroup
+        Description: Created by nodecellar-blueprint aws-blueprint.yaml.
+        VpcId: { get_attribute: [ vpc, aws_resource_id] }
       client_config: *client_config
     relationships:
     - type: cloudify.relationships.depends_on
       target: vpc
     - type: cloudify.relationships.contained_in
       target: aws
-    interfaces:
-      cloudify.interfaces.lifecycle:
-        configure:
-          inputs:
-            resource_config: { get_property: [ SELF, resource_config, kwargs] }
 
   private_subnet:
     type: cloudify.nodes.aws.ec2.Subnet
@@ -301,9 +282,8 @@ node_templates:
       use_external_resource: true
       resource_id: { get_attribute: [ aws, deployment, outputs, private_subnet_id ] }
       resource_config:
-        kwargs:
-          CidrBlock: 'N/A'
-          AvailabilityZone: 'N/A'
+        CidrBlock: 'N/A'
+        AvailabilityZone: 'N/A'
     interfaces:
       cloudify.interfaces.lifecycle:
         create:
@@ -322,9 +302,8 @@ node_templates:
       use_external_resource: true
       resource_id: { get_attribute: [ aws, deployment, outputs, public_subnet_id ] }
       resource_config:
-        kwargs:
-          CidrBlock: 'N/A'
-          AvailabilityZone: 'N/A'
+        CidrBlock: 'N/A'
+        AvailabilityZone: 'N/A'
     interfaces:
       cloudify.interfaces.lifecycle:
         create:
@@ -343,8 +322,7 @@ node_templates:
       use_external_resource: true
       resource_id: { get_attribute: [ aws, deployment, outputs, vpc_id ] }
       resource_config:
-        kwargs:
-          CidrBlock: 'N/A'
+        CidrBlock: 'N/A'
     interfaces:
       cloudify.interfaces.lifecycle:
         create:
