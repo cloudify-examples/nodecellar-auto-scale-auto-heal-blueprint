@@ -4,7 +4,7 @@ description: >
   This Blueprint installs the nodecellar application on an Azure Cloud environment.
 
 imports:
-  - http://www.getcloudify.org/spec/cloudify/4.3/types.yaml
+  - http://cloudify.co/spec/cloudify/4.5.5/types.yaml
   - plugin:cloudify-azure-plugin
   - plugin:cloudify-utilities-plugin
   - plugin:cloudify-diamond-plugin
@@ -386,7 +386,7 @@ node_templates:
       resource_config:
         blueprint:
           id: { get_input: network_deployment_name }
-          blueprint_archive: https://github.com/cloudify-examples/azure-example-network/archive/master.zip
+          blueprint_archive: https://github.com/cloudify-community/blueprint-examples/releases/download/4.5.0/azure-example-network.zip
           main_file_name: simple-blueprint.yaml
           external_resource: { get_input: use_existing_network_deployment }
         deployment:
