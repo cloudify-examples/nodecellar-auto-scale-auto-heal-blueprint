@@ -351,7 +351,7 @@ node_templates:
         blueprint:
           id: { get_input: network_deployment_name }
           blueprint_archive: https://github.com/cloudify-community/blueprint-examples/releases/download/4.5.0/aws-example-network.zip
-          main_file_name: simple-blueprint.yaml
+          main_file_name: blueprint.yaml
           external_resource: { get_input: use_existing_network_deployment }
         deployment:
           id: { get_input: network_deployment_name }
