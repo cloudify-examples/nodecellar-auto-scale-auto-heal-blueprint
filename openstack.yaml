@@ -4,8 +4,8 @@ description: >
   This Blueprint installs the nodecellar application behind an haproxy instance on an openstack cloud environment.
 
 imports:
-  - http://www.getcloudify.org/spec/cloudify/4.3/types.yaml
-  - plugin:cloudify-openstack-plugin?version=2.14.7
+  - http://cloudify.co/spec/cloudify/4.5.5/types.yaml
+  - plugin:cloudify-openstack-plugin?version=2.14.8
   - plugin:cloudify-utilities-plugin
   - plugin:cloudify-diamond-plugin
   - types/nodecellar.yaml
@@ -277,7 +277,7 @@ node_templates:
       resource_config:
         blueprint:
           id: { get_input: network_deployment_name }
-          blueprint_archive: https://github.com/cloudify-examples/openstack-example-network/archive/master.zip
+          blueprint_archive: https://github.com/cloudify-community/blueprint-examples/releases/download/4.5.0/openstack-example-network.zip
           main_file_name: simple-blueprint.yaml
           external_resource: { get_input: use_existing_network_deployment }
         deployment:

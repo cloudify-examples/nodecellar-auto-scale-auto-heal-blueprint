@@ -4,8 +4,8 @@ description: >
   This Blueprint installs the nodecellar application on an AWS cloud environment.
 
 imports:
-  - http://www.getcloudify.org/spec/cloudify/4.3/types.yaml
-  - plugin:cloudify-awssdk-plugin
+  - http://cloudify.co/spec/cloudify/4.5.5/types.yaml
+  - plugin:cloudify-aws-plugin
   - plugin:cloudify-utilities-plugin
   - plugin:cloudify-diamond-plugin
   - types/nodecellar.yaml
@@ -50,12 +50,6 @@ inputs:
     default: true
 
 dsl_definitions:
-
-  aws_config: &aws_config
-    aws_access_key_id: { get_secret: aws_access_key_id }
-    aws_secret_access_key: { get_secret: aws_secret_access_key }
-    ec2_region_name: { get_attribute: [ aws, deployment, outputs, ec2_region_name ] }
-    ec2_region_endpoint: { get_attribute: [ aws, deployment, outputs, ec2_region_endpoint ] }
 
   client_config: &client_config
     aws_access_key_id: { get_secret: aws_access_key_id }
@@ -278,10 +272,9 @@ node_templates:
     type: cloudify.nodes.aws.ec2.SecurityGroup
     properties:
       resource_config:
-        kwargs:
-          GroupName: NodecellarExampleSecurityGroup
-          Description: Created by nodecellar-blueprint aws-blueprint.yaml.
-          VpcId: { get_attribute: [ vpc, aws_resource_id] }
+        GroupName: NodecellarExampleSecurityGroup
+        Description: Created by nodecellar-blueprint aws-blueprint.yaml.
+        VpcId: { get_attribute: [ vpc, aws_resource_id] }
       client_config: *client_config
     relationships:
     - type: cloudify.relationships.depends_on
@@ -301,9 +294,8 @@ node_templates:
       use_external_resource: true
       resource_id: { get_attribute: [ aws, deployment, outputs, private_subnet_id ] }
       resource_config:
-        kwargs:
-          CidrBlock: 'N/A'
-          AvailabilityZone: 'N/A'
+        CidrBlock: 'N/A'
+        AvailabilityZone: 'N/A'
     interfaces:
       cloudify.interfaces.lifecycle:
         create:
@@ -322,9 +314,8 @@ node_templates:
       use_external_resource: true
       resource_id: { get_attribute: [ aws, deployment, outputs, public_subnet_id ] }
       resource_config:
-        kwargs:
-          CidrBlock: 'N/A'
-          AvailabilityZone: 'N/A'
+        CidrBlock: 'N/A'
+        AvailabilityZone: 'N/A'
     interfaces:
       cloudify.interfaces.lifecycle:
         create:
@@ -343,8 +334,7 @@ node_templates:
       use_external_resource: true
       resource_id: { get_attribute: [ aws, deployment, outputs, vpc_id ] }
       resource_config:
-        kwargs:
-          CidrBlock: 'N/A'
+        CidrBlock: 'N/A'
     interfaces:
       cloudify.interfaces.lifecycle:
         create:
@@ -360,7 +350,7 @@ node_templates:
       resource_config:
         blueprint:
           id: { get_input: network_deployment_name }
-          blueprint_archive: https://github.com/cloudify-examples/aws-example-network/archive/master.zip
+          blueprint_archive: https://github.com/cloudify-community/blueprint-examples/releases/download/4.5.0/aws-example-network.zip
           main_file_name: simple-blueprint.yaml
           external_resource: { get_input: use_existing_network_deployment }
         deployment:
@@ -457,7 +447,6 @@ policies:
 
   nodejs_group_scaling_policy:
     type: cloudify.policies.scaling
-    properties:
     properties:
       min_instances: 2
       max_instances: 5
