@@ -19,7 +19,7 @@ This example requires configuration of [multiple management (agent) networks](ht
 The required name of the agent network is `external`, and should map to a public IP address. For example:
 
 ```bash
-[centos@ip-10-10-4-47 ~]$ sudo grep "networks" /etc/cloudify/config.yaml 
+[centos@ip-10-10-4-47 ~]$ sudo grep "networks" /etc/cloudify/config.yaml
     networks: {default: 10.10.4.47, external: 54.67.45.103}
 ```
 
@@ -41,6 +41,25 @@ Install the relevant example network blueprint for the IaaS that you wish to dep
   * [AWS Example Network](https://github.com/cloudify-examples/aws-example-network)
   * [GCP Example Network](https://github.com/cloudify-examples/gcp-example-network)
   * [Azure Example Network](https://github.com/cloudify-examples/azure-example-network)
+
+Create required secrets list:
+
+  > Secrets have duplicates due two deployments require different secrets
+
+  * agent_key_private - private ssh key content
+  * agent_key_public - public ssh key content
+  * keystone_username - openstack/keystone username
+  * keystone_password - openstack/keystone user's password
+  * keystone_region - openstack/keystone region name
+  * keystone_tenant_name - openstack/keystone project/tenant name
+  * keystone_url - openstack/keystone auth url
+  * openstack_auth_url - openstack/keystone auth url
+  * openstack_password - openstack/keystone user's password
+  * openstack_region - openstack/keystone region name
+  * openstack_tenant_name - openstack/keystone project/tenant name
+  * openstack_username - openstack/keystone username
+  * ubuntu_trusty_image - Ubuntu Trusty image ID
+
 
 ## Installation
 

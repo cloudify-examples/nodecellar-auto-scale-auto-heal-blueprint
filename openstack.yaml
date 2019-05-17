@@ -48,7 +48,10 @@ inputs:
     default: openstack-example-network
 
   use_existing_network_deployment:
-    default: true
+    default: false
+
+  external_network_name:
+    default: { get_secret: external_network_name }
 
 dsl_definitions:
 
@@ -282,6 +285,8 @@ node_templates:
           external_resource: { get_input: use_existing_network_deployment }
         deployment:
           id: { get_input: network_deployment_name }
+          inputs:
+              external_network_name: { get_input: external_network_name }
           outputs:
             external_network: external_network
             public_network_router: public_network_router
@@ -337,7 +342,7 @@ groups:
       auto_scale_down:
         type: scale_policy_type
         properties:
-          scale_limit: 2
+          scale_limit: 1
           scale_direction: '>'
           scale_threshold: 1
           service_selector: .*nodejs_host.*.process.node.cpu.percent
